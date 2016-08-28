@@ -1,0 +1,99 @@
+{
+    "rotation": "MineSweeper:Sweeper",
+    "tile" : "MineSweeper:counter",
+    "entity": {
+        "prefab": "MineSweeper:mine"
+    },
+    "marked":{
+        "tiles" : {
+           "all" : "MineSweeper:marked"
+        }
+    },
+    "one": {
+        "tiles" : {
+           "all" : "MineSweeper:stone-1"
+        }
+    },
+    "two": {
+
+            "tiles" : {
+               "all" : "MineSweeper:stone-2"
+            }
+     },
+    "three": {
+
+            "tiles" : {
+               "all" : "MineSweeper:stone-3"
+            }
+     },
+    "four": {
+
+            "tiles" : {
+               "all" : "MineSweeper:stone-4"
+            }
+     },
+    "five": {
+
+            "tiles" : {
+               "all" : "MineSweeper:stone-5"
+            }
+     },
+    "six": {
+
+            "tiles" : {
+               "all" : "MineSweeper:stone-6"
+            }
+     },
+    "seven": {
+            "tiles" : {
+               "all" : "MineSweeper:stone-7"
+            }
+     },
+
+    "eight": {
+            "tiles" : {
+               "all" : "MineSweeper:stone-8"
+            }
+     },
+
+    "nine": {
+            "tiles" : {
+               "all" : "MineSweeper:stone-8"
+            }
+     },
+    "ten": {
+            "tiles" : {
+               "all" : "MineSweeper:stone-10"
+            }
+     },
+    "eleven": {
+            "tiles" : {
+               "all" : "MineSweeper:stone-11"
+            }
+     },
+    "twelve": {
+            "tiles" : {
+               "all" : "MineSweeper:stone-12"
+            }
+     },
+    "thirteen": {
+            "tiles" : {
+               "all" : "MineSweeper:stone-13"
+            }
+     },
+    "fourteen": {
+            "tiles" : {
+               "all" : "MineSweeper:stone-14"
+            }
+     },
+    "fifteen": {
+         "tiles" : {
+            "all" : "MineSweeper:stone-15"
+         }
+    },
+    "sixteen": {
+          "tiles" : {
+             "all" : "MineSweeper:stone-16"
+          }
+    }
+}
