@@ -19,7 +19,12 @@ import org.terasology.customOreGen.ClusterStructureDefinition;
 import org.terasology.customOreGen.PDist;
 import org.terasology.customOreGen.Structure;
 import org.terasology.customOreGen.StructureNodeType;
+import org.terasology.math.Region3i;
+import org.terasology.math.TeraMath;
+import org.terasology.math.geom.Rect2i;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.utilities.procedural.Noise;
+import org.terasology.utilities.procedural.WhiteNoise;
 import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
 import org.terasology.world.generation.Produces;
@@ -27,18 +32,20 @@ import org.terasology.world.generator.plugin.RegisterPlugin;
 
 import java.util.Collection;
 
+import static org.terasology.math.TeraMath.*;
+
 /**
  * Created by michaelpollind on 8/28/16.
  */
 @RegisterPlugin
-@Produces(MinefieldFacet.class)
+@Produces(MineFieldFacet.class)
 public class MineFieldFacetProvider implements FacetProviderPlugin {
-    private  long seed;
+    private Noise noise;
 
     @Override
     public void setSeed(long seed) {
-        this.seed = seed;
 
+        noise = new WhiteNoise(seed);
     }
 
     @Override
@@ -48,25 +55,23 @@ public class MineFieldFacetProvider implements FacetProviderPlugin {
 
     @Override
     public void process(GeneratingRegion region) {
-        final MinefieldFacet facet = new MinefieldFacet(region.getRegion(), region.getBorderForFacet(MinefieldFacet.class));
+        final MineFieldFacet facet = new MineFieldFacet(region.getRegion(), region.getBorderForFacet(MineFieldFacet.class));
 
+        Region3i worldRegion = facet.getWorldRegion();
 
-        ClusterStructureDefinition clusterStructureDefinition = new ClusterStructureDefinition(new PDist(10f,20f),new PDist(10f,20),new PDist(5f,100f));
-        Collection<Structure> structures =  clusterStructureDefinition.generateStructures(seed,region.getRegion());
-        for(Structure structure : structures)
-        {
-            structure.generateStructure(new Structure.StructureCallback() {
-                @Override
-                public void replaceBlock(Vector3i position, StructureNodeType structureNodeType, Vector3i distanceToCenter) {
-                    facet.
+        for (int x = worldRegion.minX(); x <= worldRegion.maxX(); x++)
+            for (int y = worldRegion.minX(); y <= worldRegion.maxX(); y++) {
+                for (int z = worldRegion.minX(); z <= worldRegion.maxX(); z++) {
+
+                    // TODO: check for overlap
+                    if (noise.noise(x,y, z) > 0.99) {
+                        facet.setWorld(x, y, z, new Mine());
+
+                    }
                 }
 
-                @Override
-                public boolean canReplace(int x, int y, int z) {
-                    return true;
-                }
-            });
-        }
-        region.setRegionFacet(MinefieldFacet.class, facet);
+            }
+
+        region.setRegionFacet(MineFieldFacet.class, facet);
     }
 }

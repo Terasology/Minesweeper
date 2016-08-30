@@ -15,17 +15,8 @@
  */
 package org.terasology.MineSweeper.generator;
 
-import org.terasology.math.Region3i;
-import org.terasology.world.generation.Border3D;
-import org.terasology.world.generation.facets.base.BaseFacet3D;
-
 /**
- * Created by michaelpollind on 8/28/16.
+ * Created by michaelpollind on 8/29/16.
  */
-public class MinefieldFacet extends BaseFacet3D {
-
-    public MinefieldFacet(Region3i targetRegion, Border3D border) {
-        super(targetRegion, border);
-    }
-
+public class Mine {
 }

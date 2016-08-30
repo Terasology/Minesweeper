@@ -15,6 +15,13 @@
  */
 package org.terasology.MineSweeper.generator;
 
+import org.terasology.math.geom.BaseVector3i;
+import org.terasology.math.geom.Vector3i;
+import org.terasology.registry.CoreRegistry;
+import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockManager;
+import org.terasology.world.block.BlockUri;
+import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.generation.Region;
 import org.terasology.world.generation.WorldRasterizer;
@@ -26,13 +33,24 @@ import org.terasology.world.generator.plugin.RegisterPlugin;
  */
 @RegisterPlugin
 public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
+    private Block mine;
+    private Block counter;
+
+
     @Override
     public void initialize() {
-        
+        BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+
+        counter= blockManager.getBlock(new BlockUri("MineSweeper:Counter"));
+        mine = blockManager.getBlock(new BlockUri("MineSweeper:Mine"));
+
     }
 
     @Override
     public void generateChunk(CoreChunk chunk, Region chunkRegion) {
+        MineFieldFacet oreFacet = chunkRegion.getFacet(MineFieldFacet.class);
+        for (Entry<BaseVector3i, Mine> entry : houseFacet.getWorldEntries().entrySet()) {
 
+        }
     }
 }
