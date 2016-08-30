@@ -30,20 +30,8 @@ import java.util.Vector;
  */
 public class MineFieldFacet extends SparseObjectFacet3D<Mine> {
 
-    private List<Vector3i> position = new Vector<>();
-
     public MineFieldFacet(Region3i targetRegion, Border3D border) {
         super(targetRegion, border);
-    }
-
-    public  void addMine(Vector3i pos)
-    {
-        position.add(pos);
-    }
-
-    public Vector3i[] mineLocations()
-    {
-        return (Vector3i[]) position.toArray();
     }
 
 }

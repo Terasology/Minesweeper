@@ -27,6 +27,7 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.AbstractBlockFamily;
 import org.terasology.world.block.family.ConnectionCondition;
+import org.terasology.world.chunks.CoreChunk;
 
 import java.util.Set;
 
@@ -47,7 +48,14 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
 
     @Override
     public Block getBlockForPlacement(WorldProvider worldProvider, BlockEntityRegistry blockEntityRegistry, Vector3i location, Side attachmentSide, Side direction) {
-       int numberOfMines = 0;
+
+        return getBlockForPlacement(blockEntityRegistry,location);
+    }
+
+
+    public  Block getBlockForPlacement(BlockEntityRegistry blockEntityRegistry, Vector3i location)
+    {
+        int numberOfMines = 0;
         for (int x = -1;x <= 1; x++)
         {
             for (int y = -1;y <= 1; y++)
@@ -62,10 +70,10 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
             }
         }
 
-
-
-        return blocks.get((byte) numberOfMines );
+        return blocks.get((byte) numberOfMines);
     }
+
+
 
     @Override
     public Block getArchetypeBlock() {
@@ -84,6 +92,11 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
             }
         }
         return null;
+    }
+
+    public  Block getBlockForNumberOfNeighbors(byte numberOfMines)
+    {
+        return  blocks.get((byte)numberOfMines);
     }
 
     @Override

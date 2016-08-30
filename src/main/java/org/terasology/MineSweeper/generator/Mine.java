@@ -15,8 +15,18 @@
  */
 package org.terasology.MineSweeper.generator;
 
+import org.terasology.customOreGen.PDist;
+import org.terasology.math.geom.Vector3i;
+import org.terasology.utilities.random.Random;
+
 /**
  * Created by michaelpollind on 8/29/16.
  */
 public class Mine {
+
+    public  Mine()
+    {
+
+    }
+
 }
