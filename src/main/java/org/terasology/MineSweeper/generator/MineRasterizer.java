@@ -21,6 +21,7 @@ import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.ChunkMath;
 import org.terasology.math.geom.BaseVector3i;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.protobuf.NetData;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.block.Block;
@@ -42,6 +43,8 @@ import java.util.Map;
 @RegisterPlugin
 public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
 
+    private SweeperFamilyUpdate mine;
+    private  SweeperFamilyUpdate counterFamily;
 
     @Override
     public void initialize() {
@@ -50,34 +53,55 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
     @Override
     public void generateChunk(CoreChunk chunk, Region chunkRegion) {
         BlockManager blockManager = CoreRegistry.get(BlockManager.class);
-        BlockFamily mine = blockManager.getBlockFamily("MineSweeper:Mine");
+        mine = (SweeperFamilyUpdate)blockManager.getBlockFamily("MineSweeper:Mine");
+        counterFamily = (SweeperFamilyUpdate)blockManager.getBlockFamily("MineSweeper:Counter");
 
         MineFieldFacet oreFacet = chunkRegion.getFacet(MineFieldFacet.class);
         for (Map.Entry<BaseVector3i, Mine> entry : oreFacet.getWorldEntries().entrySet()) {
             Vector3i center = new Vector3i(entry.getKey());
-            chunk.setBlock(ChunkMath.calcBlockPos(center),mine.getArchetypeBlock());//mineFamily.getBlockForPlacement(blockEntityRegistry,center));
 
-            /*for (int x = -1;x <= 1; x++)
+
+            chunk.setBlock(ChunkMath.calcBlockPos(center),mine.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(center,chunk,true)));//mineFamily.getBlockForPlacement(blockEntityRegistry,center));
+
+            for (int x = -1;x <= 1; x++)
             {
                 for (int y = -1;y <= 1; y++)
                 {
                     for (int z = -1;z <= 1; z++)
                     {
                         Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
-                        EntityRef ref = blockEntityRegistry.getBlockEntityAt(position);
-                        if(ref.hasComponent(ExplosiveMineComponent.class))
-                        {
-                            chunk.setBlock(position,mineFamily.getBlockForPlacement(blockEntityRegistry,position));
-                        }
-                        else
-                        {
-                            chunk.setBlock(position,counterFamily.getBlockForPlacement(blockEntityRegistry,position));
+                        if(chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
+                            if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
+                                chunk.setBlock(ChunkMath.calcBlockPos(position), mine.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, true)));
+                            } else {
+                                chunk.setBlock(ChunkMath.calcBlockPos(position), counterFamily.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, false)));
+                            }
+                        }else {
+                            chunk.setBlock(ChunkMath.calcBlockPos(position), counterFamily.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, false)));
                         }
                     }
                 }
-            }*/
+            }
 
         }
+    }
+
+    private int CalculateNumberofMines(Vector3i center,CoreChunk chunk,boolean isMine)
+    {
+        int amount  = 0;
+        for (int x = -1;x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -1; z <= 1; z++) {
+                    Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
+                    if(chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
+                        if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
+                            amount++;
+                        }
+                    }
+                }
+            }
+        }
+        return amount;
     }
 
 }

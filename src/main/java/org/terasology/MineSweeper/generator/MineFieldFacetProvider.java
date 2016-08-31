@@ -54,12 +54,13 @@ public class MineFieldFacetProvider implements FacetProviderPlugin {
 
     @Override
     public void process(GeneratingRegion region) {
+
         Border3D border = region.getBorderForFacet(MineFieldFacet.class).extendBy(40,40,40);
         final MineFieldFacet facet = new MineFieldFacet(region.getRegion(),border);
 
         PDist size = new PDist(50,30);
         PDist distance = new PDist(0,20);
-        PDist frequency = new PDist(10,3);
+        PDist frequency = new PDist(2,1);
 
         Random random = ChunkRandom.getChunkRandom(seed, ChunkMath.calcChunkPos(region.getRegion().center()), 17832181);
 
