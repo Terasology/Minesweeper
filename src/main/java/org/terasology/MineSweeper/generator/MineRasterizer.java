@@ -18,6 +18,7 @@ package org.terasology.MineSweeper.generator;
 import org.terasology.MineSweeper.blocks.SweeperFamilyUpdate;
 import org.terasology.MineSweeper.component.ExplosiveMineComponent;
 import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.math.ChunkMath;
 import org.terasology.math.geom.BaseVector3i;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.CoreRegistry;
@@ -25,6 +26,7 @@ import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
+import org.terasology.world.block.family.BlockFamily;
 import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.generation.Region;
@@ -41,29 +43,21 @@ import java.util.Map;
 public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
 
 
-    private SweeperFamilyUpdate mineFamily;
-    private SweeperFamilyUpdate counterFamily;
-
-    private BlockEntityRegistry blockEntityRegistry;
-
-
     @Override
     public void initialize() {
-        BlockManager blockManager = CoreRegistry.get(BlockManager.class);
-        blockEntityRegistry = CoreRegistry.get(BlockEntityRegistry.class);
-
-        mineFamily = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Mine");
-        counterFamily = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Counter");
     }
 
     @Override
     public void generateChunk(CoreChunk chunk, Region chunkRegion) {
+        BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+        BlockFamily mine = blockManager.getBlockFamily("MineSweeper:Mine");
+
         MineFieldFacet oreFacet = chunkRegion.getFacet(MineFieldFacet.class);
         for (Map.Entry<BaseVector3i, Mine> entry : oreFacet.getWorldEntries().entrySet()) {
             Vector3i center = new Vector3i(entry.getKey());
-            chunk.setBlock(center,mineFamily.getBlockForPlacement(blockEntityRegistry,center));
+            chunk.setBlock(ChunkMath.calcBlockPos(center),mine.getArchetypeBlock());//mineFamily.getBlockForPlacement(blockEntityRegistry,center));
 
-            for (int x = -1;x <= 1; x++)
+            /*for (int x = -1;x <= 1; x++)
             {
                 for (int y = -1;y <= 1; y++)
                 {
@@ -81,7 +75,7 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
                         }
                     }
                 }
-            }
+            }*/
 
         }
     }
