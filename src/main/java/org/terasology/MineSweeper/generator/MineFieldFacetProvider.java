@@ -59,7 +59,7 @@ public class MineFieldFacetProvider implements FacetProviderPlugin {
         final MineFieldFacet facet = new MineFieldFacet(region.getRegion(),border);
 
         PDist size = new PDist(50,30);
-        PDist distance = new PDist(0,20);
+        PDist distance = new PDist(0,5);
         PDist frequency = new PDist(2,1);
 
         Random random = ChunkRandom.getChunkRandom(seed, ChunkMath.calcChunkPos(region.getRegion().center()), 17832181);
