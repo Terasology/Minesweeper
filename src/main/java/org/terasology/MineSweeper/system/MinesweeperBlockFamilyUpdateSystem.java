@@ -15,193 +15,142 @@
  */
 package org.terasology.MineSweeper.system;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.MineSweeper.blocks.SweeperFamilyUpdate;
 import org.terasology.MineSweeper.component.ExplosiveMineComponent;
+import org.terasology.MineSweeper.component.SweeperCountComponent;
+import org.terasology.audio.StaticSound;
+import org.terasology.audio.events.PlaySoundEvent;
+import org.terasology.core.logic.blockDropGrammar.BlockDropGrammarComponent;
+import org.terasology.entitySystem.entity.EntityBuilder;
+import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.EventPriority;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.logic.actions.ActionTarget;
+import org.terasology.logic.actions.ExplosionActionComponent;
+import org.terasology.logic.actions.ExplosionAuthoritySystem;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.health.DoDestroyEvent;
 import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.logic.inventory.ItemComponent;
-import org.terasology.math.ChunkMath;
+import org.terasology.logic.location.LocationComponent;
+import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.In;
+import org.terasology.utilities.Assets;
+import org.terasology.utilities.random.FastRandom;
+import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.OnChangedBlock;
-import org.terasology.world.WorldComponent;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.entity.neighbourUpdate.LargeBlockUpdateFinished;
-import org.terasology.world.block.entity.neighbourUpdate.LargeBlockUpdateStarting;
+import org.terasology.world.block.entity.CreateBlockDropsEvent;
 import org.terasology.world.block.items.BlockItemComponent;
-import org.terasology.world.chunks.Chunk;
-import org.terasology.world.chunks.ChunkConstants;
-import org.terasology.world.chunks.event.OnChunkGenerated;
+import org.terasology.world.generation.EntityProvider;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
+
 
 /**
  * Created by michaelpollind on 8/28/16.
  */
-public class MinesweeperBlockFamilyUpdateSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+@RegisterSystem(RegisterMode.AUTHORITY)
+public class MinesweeperBlockFamilyUpdateSystem extends BaseComponentSystem {
 
     private static final Logger logger = LoggerFactory.getLogger(MinesweeperBlockFamilyUpdateSystem .class);
 
+    private Random random = new FastRandom();
+    private List<Optional<StaticSound>> explosionSounds = Lists.newArrayList();
+
+
     @In
-    private WorldProvider worldProvider;
+    private EntityManager entityManager;
+
     @In
     private BlockEntityRegistry blockEntityRegistry;
+
     @In
-    private BlockManager blockManager;
+    WorldProvider worldProvider;
 
-    private int largeBlockUpdateCount;
-    private Set<Vector3i> blocksUpdatedInLargeBlockUpdate = Sets.newHashSet();
-    private int[] checkOnHeight = {-1, 0, 1};
-
-    private SweeperFamilyUpdate mineFamily;
-    private SweeperFamilyUpdate counterFamily;
-
-
+    @In
+    BlockManager blockManager;
 
     @Override
     public void initialise() {
+        explosionSounds.add(Assets.getSound("core:explode1"));
+        explosionSounds.add(Assets.getSound("core:explode2"));
+        explosionSounds.add(Assets.getSound("core:explode3"));
+        explosionSounds.add(Assets.getSound("core:explode4"));
+        explosionSounds.add(Assets.getSound("core:explode5"));
+    }
 
-        mineFamily = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Mine");
-        counterFamily = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Counter");
+
+    @ReceiveEvent(components = {ExplosiveMineComponent.class})
+    public void whenMineBlockDropped(CreateBlockDropsEvent event, EntityRef blockEntity) {
+        event.consume();
+    }
+
+
+    @ReceiveEvent(components = {SweeperCountComponent.class})
+    public void whenCounterBlockDropped(CreateBlockDropsEvent event, EntityRef blockEntity) {
+        event.consume();
     }
 
     @ReceiveEvent
-    public void largeBlockUpdateStarting(LargeBlockUpdateStarting event, EntityRef entity) {
-        largeBlockUpdateCount++;
+    public void onMineDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent,ExplosiveMineComponent mine) {
+
+        ExplosionActionComponent component = new ExplosionActionComponent();
+        component.relativeTo = ActionTarget.Self;
+        doExplosion(component,blockComponent.getPosition().toVector3f(),entity);
+
     }
 
-    @ReceiveEvent
-    public void largeBlockUpdateFinished(LargeBlockUpdateFinished event, EntityRef entity) {
-        largeBlockUpdateCount--;
-        if (largeBlockUpdateCount < 0) {
-            largeBlockUpdateCount = 0;
-            throw new IllegalStateException("LargeBlockUpdateFinished invoked too many times");
-        }
-
-        if (largeBlockUpdateCount == 0) {
-            notifyNeighboursOfChangedBlocks();
-        }
+    private StaticSound getRandomExplosionSound() {
+        return explosionSounds.get(random.nextInt(0, explosionSounds.size() - 1)).get();
     }
 
-    @ReceiveEvent(priority = EventPriority.PRIORITY_NORMAL)
-    public void doDestroy(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent) {
-        Vector3i upBlock = new Vector3i(blockComponent.getPosition());
-        upBlock.y += 1;
-        Block block = worldProvider.getBlock(upBlock);
-
-        if (block.getBlockFamily() instanceof SweeperFamilyUpdate) {
-            blockEntityRegistry.getEntityAt(upBlock).send(new DoDamageEvent(1000, EngineDamageTypes.DIRECT.get()));
-        }
-    }
-/*
-    @ReceiveEvent(components = {ConnectsToRailsComponent.class}, netFilter = RegisterMode.AUTHORITY)
-    public void onActivate(ActivateEvent event, EntityRef entity) {
-        ConnectsToRailsComponent connectsToRailsComponent = entity.getComponent(ConnectsToRailsComponent.class);
-        BlockComponent blockComponent = entity.getComponent(BlockComponent.class);
-        if (blockComponent == null) {
-            return;
-        }
-        Vector3i targetLocation = blockComponent.getPosition();
-        if (connectsToRailsComponent.type == ConnectsToRailsComponent.RAILS.TEE) {
-            BlockFamily type = blockManager.getBlockFamily("RailsTBlockInverted");
-            Block targetBlock = worldProvider.getBlock(targetLocation);
-            changeTBlock(event.getInstigator(), type, targetLocation, targetBlock.getDirection(), targetBlock.getDirection().yawClockwise(2));
-        } else if (connectsToRailsComponent.type == ConnectsToRailsComponent.RAILS.TEE_INVERSED) {
-            BlockFamily type = blockManager.getBlockFamily("rails:Rails");
-            Block targetBlock = worldProvider.getBlock(targetLocation);
-            changeTBlock(event.getInstigator(), type, targetLocation, targetBlock.getDirection(), targetBlock.getDirection().yawClockwise(2));
-        }
-    }*/
-
-    @ReceiveEvent(components = {BlockItemComponent.class, ItemComponent.class}, priority = EventPriority.PRIORITY_HIGH)
-    public void onPlaceBlock(ActivateEvent event, EntityRef item) {
-        BlockComponent blockComponent = event.getTarget().getComponent(BlockComponent.class);
-        if (blockComponent == null) {
-            return;
-        }
-        Vector3i targetBlock = blockComponent.getPosition();
-        Block centerBlock = worldProvider.getBlock(targetBlock.x, targetBlock.y, targetBlock.z);
-
-        if (centerBlock.getBlockFamily() instanceof SweeperFamilyUpdate) {
-            event.consume();
-        }
-    }
-
-    private void notifyNeighboursOfChangedBlocks() {
-        // Invoke the updates in another large block change for this class only
-        largeBlockUpdateCount++;
-        while (!blocksUpdatedInLargeBlockUpdate.isEmpty()) {
-            Set<Vector3i> blocksToUpdate = blocksUpdatedInLargeBlockUpdate;
-
-            // Setup new collection for blocks changed in this pass
-            blocksUpdatedInLargeBlockUpdate = Sets.newHashSet();
-
-            for (Vector3i blockLocation : blocksToUpdate) {
-                processUpdateForBlockLocation(blockLocation);
-            }
-        }
-        largeBlockUpdateCount--;
-    }
+    void doExplosion(ExplosionActionComponent explosionComp, Vector3f origin, EntityRef instigatingBlockEntity) {
+        worldProvider.setBlock(new Vector3i(origin), blockManager.getBlock(BlockManager.AIR_ID));
 
 
-    @ReceiveEvent(components = {BlockComponent.class})
-    public void blockUpdate(OnChangedBlock event, EntityRef blockEntity) {
-        if (largeBlockUpdateCount > 0) {
-            blocksUpdatedInLargeBlockUpdate.add(event.getBlockPosition());
-        } else {
-            Vector3i blockLocation = event.getBlockPosition();
-            processUpdateForBlockLocation(blockLocation);
-        }
-    }
+        EntityBuilder builder = entityManager.newBuilder("engine:smokeExplosion");
+        builder.getComponent(LocationComponent.class).setWorldPosition(origin);
+        EntityRef smokeEntity = builder.build();
 
-    private void processUpdateForBlockLocation(Vector3i blockLocation) {
-        if(!blockEntityRegistry.getBlockEntityAt(blockLocation).hasComponent(ExplosiveMineComponent.class))
-            return;
-        for (int x = -1;x <= 1; x++)
-        {
-            for (int y = -1;y <= 1; y++)
-            {
-                for (int z = -1;z <= 1; z++)
-                {
-                    if(x == 0 && y ==0 && z == 0)
-                        return;
-                    Vector3i position = new Vector3i(blockLocation).addX(x).addY(y).addZ(z);
-                    EntityRef ref = blockEntityRegistry.getBlockEntityAt(position);
-                    if(ref.hasComponent(ExplosiveMineComponent.class))
-                    {
-                        worldProvider.setBlock(position,mineFamily.getBlockForPlacement(blockEntityRegistry,position));
-                    }
-                    else
-                    {
-                        worldProvider.setBlock(position,counterFamily.getBlockForPlacement(blockEntityRegistry,position));
+        smokeEntity.send(new PlaySoundEvent(getRandomExplosionSound(), 1f));
+
+        Vector3i blockPos = new Vector3i();
+        for (int i = 0; i < explosionComp.maxRange; i++) {
+            Vector3f direction = random.nextVector3f(1.0f);
+
+            for (int j = 0; j < 4; j++) {
+                Vector3f target = new Vector3f(origin);
+
+                target.x += direction.x * j;
+                target.y += direction.y * j;
+                target.z += direction.z * j;
+                blockPos.set((int) target.x, (int) target.y, (int) target.z);
+                Block currentBlock = worldProvider.getBlock(blockPos);
+
+                /* PHYSICS */
+                if (currentBlock.isDestructible()) {
+                    EntityRef blockEntity = blockEntityRegistry.getEntityAt(blockPos);
+                    // allow explosions to chain together,  but do not chain on the instigating block
+                    if (!blockEntity.equals(instigatingBlockEntity) && blockEntity.hasComponent(ExplosiveMineComponent.class)) {
+                        doExplosion(blockEntity.getComponent(ExplosionActionComponent.class), blockPos.toVector3f(), blockEntity);
+                    } else {
+                        blockEntity.send(new DoDamageEvent(explosionComp.damageAmount, explosionComp.damageType));
                     }
                 }
             }
         }
-
     }
-
-    @Override
-    public void update(float delta) {
-        if (largeBlockUpdateCount > 0) {
-            logger.error("Unmatched LargeBlockUpdateStarted - LargeBlockUpdateFinished not invoked enough times");
-        }
-        largeBlockUpdateCount = 0;
-    }
-
 }

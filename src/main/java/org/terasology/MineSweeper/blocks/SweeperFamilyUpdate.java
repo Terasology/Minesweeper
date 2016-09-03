@@ -77,7 +77,7 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
 
     @Override
     public Block getArchetypeBlock() {
-        return blocks.get((byte) 1);
+        return blocks.get((byte) 0);
     }
 
     @Override

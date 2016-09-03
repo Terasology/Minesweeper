@@ -61,6 +61,31 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
             Vector3i center = new Vector3i(entry.getKey());
 
 
+            boolean isMineLegal = true;
+            for (int x = -1;x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    for (int z = -1; z <= 1; z++) {
+                        Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
+                        if(chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
+                            if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
+                                if (mine.getBlockForNumberOfNeighbors((byte) (CalculateNumberofMines(position, chunk, true) + 1)) == null) {
+                                    isMineLegal = false;
+                                }
+                            }
+                           else
+                            {
+                                if (counterFamily.getBlockForNumberOfNeighbors((byte) (CalculateNumberofMines(position, chunk, true) + 1)) == null) {
+                                    isMineLegal = false;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+            if(!isMineLegal )
+                return;
+
             chunk.setBlock(ChunkMath.calcBlockPos(center),mine.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(center,chunk,true)));//mineFamily.getBlockForPlacement(blockEntityRegistry,center));
 
             for (int x = -1;x <= 1; x++)

@@ -18,6 +18,7 @@ package org.terasology.MineSweeper.generator;
 import org.terasology.customOreGen.*;
 import org.terasology.math.ChunkMath;
 import org.terasology.math.Region3i;
+import org.terasology.math.Side;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Rect2i;
 import org.terasology.math.geom.Vector3i;
@@ -37,7 +38,7 @@ import static org.terasology.math.TeraMath.*;
  * Created by michaelpollind on 8/28/16.
  */
 @RegisterPlugin
-@Updates(@Facet(value = SurfaceHeightFacet.class))
+@Updates(@Facet(value = SurfaceHeightFacet.class,  border = @FacetBorder(bottom = 40,top = 40, sides = 40)))
 @Produces(MineFieldFacet.class)
 public class MineFieldFacetProvider implements FacetProviderPlugin {
     private  long seed;
