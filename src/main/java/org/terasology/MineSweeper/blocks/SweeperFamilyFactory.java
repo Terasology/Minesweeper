@@ -118,7 +118,8 @@ public class SweeperFamilyFactory implements BlockFamilyFactory {
         {
 
             Block block = blockBuilder.constructTransformedBlock(definition, SWEEPER_MAPPING.get(x), Rotation.none());
-            block.getPrefab().get().getComponent(SweeperCountComponent.class).value = x;
+
+            //block.getPrefab().get().getComponent(SweeperCountComponent.class).value = x;
             block.setUri(new BlockUri(blockUri,new Name(String.valueOf(x))));
             blocks.put(x,block);
 

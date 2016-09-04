@@ -55,6 +55,11 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
 
     public  Block getBlockForPlacement(BlockEntityRegistry blockEntityRegistry, Vector3i location)
     {
+        return blocks.get((byte) getNumberOfMines(blockEntityRegistry,location));
+    }
+
+    public  int getNumberOfMines(BlockEntityRegistry blockEntityRegistry, Vector3i location)
+    {
         int numberOfMines = 0;
         for (int x = -1;x <= 1; x++)
         {
@@ -69,8 +74,7 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
                 }
             }
         }
-
-        return blocks.get((byte) numberOfMines);
+        return numberOfMines;
     }
 
 
