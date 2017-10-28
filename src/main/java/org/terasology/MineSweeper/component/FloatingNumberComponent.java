@@ -24,5 +24,4 @@ import org.terasology.entitySystem.entity.EntityRef;
 public class FloatingNumberComponent implements Component {
     public EntityRef floatingNumber;
     public boolean isReady;
-
 }

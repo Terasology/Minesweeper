@@ -42,14 +42,14 @@ import java.util.*;
 /**
  * Created by michaelpollind on 8/27/16.
  */
-@RegisterBlockFamilyFactory(value = "MineSweeper:Sweeper")
+@RegisterBlockFamilyFactory(value = "MineSweeper:countable")
 public class SweeperFamilyFactory implements BlockFamilyFactory {
     public static final String ONE = "one";
     public static final String TWO = "two";
-    public static final String THREE= "three";
-    public static final String FOUR= "four";
+    public static final String THREE = "three";
+    public static final String FOUR = "four";
     public static final String FIVE = "five";
-    public static final String SIX= "six";
+    public static final String SIX = "six";
     public static final String SEVEN = "seven";
     public static final String EIGHT = "eight";
     public static final String NINE = "nine";
@@ -57,11 +57,11 @@ public class SweeperFamilyFactory implements BlockFamilyFactory {
     public static final String ELEVEN = "eleven";
     public static final String TWELEVE = "twelve";
     public static final String THIRTEEN = "thirteen";
-    public static final String FOURTEEN  = "fourteen";
+    public static final String FOURTEEN = "fourteen";
     public static final String FIFTEEN = "fifteen";
     public static final String SIXTEEN = "sixteen";
     public static final String MARKED = "marked";
-    private static final ImmutableList<String> SWEEPER_MAPPING= ImmutableList.<String>builder()
+    private static final ImmutableList<String> SWEEPER_MAPPING = ImmutableList.<String>builder()
             .add(MARKED)
             .add(ONE)
             .add(TWO)
@@ -80,6 +80,7 @@ public class SweeperFamilyFactory implements BlockFamilyFactory {
             .add(FIFTEEN)
             .add(SIXTEEN)
             .build();
+
     @Override
     public Set<String> getSectionNames() {
 
@@ -104,30 +105,22 @@ public class SweeperFamilyFactory implements BlockFamilyFactory {
                 .build();
     }
 
-
-    public SweeperFamilyFactory()
-    {
-    }
-
     @Override
     public BlockFamily createBlockFamily(BlockFamilyDefinition definition, BlockBuilderHelper blockBuilder) {
         TByteObjectMap<Block> blocks = new TByteObjectHashMap<>();
         BlockUri blockUri = new BlockUri(definition.getUrn());
 
-        for(byte x = 0; x < SWEEPER_MAPPING.size(); x++)
-        {
+        for (byte x = 0; x < SWEEPER_MAPPING.size(); x++) {
 
             Block block = blockBuilder.constructTransformedBlock(definition, SWEEPER_MAPPING.get(x), Rotation.none());
 
             //block.getPrefab().get().getComponent(SweeperCountComponent.class).value = x;
-            block.setUri(new BlockUri(blockUri,new Name(String.valueOf(x))));
-            blocks.put(x,block);
+            block.setUri(new BlockUri(blockUri, new Name(String.valueOf(x))));
+            blocks.put(x, block);
 
         }
-        return new SweeperFamilyUpdate(blockUri,definition.getCategories(),blocks);
+        return new SweeperFamilyUpdate(blockUri, definition.getCategories(), blocks);
     }
-
-
 
 
 }

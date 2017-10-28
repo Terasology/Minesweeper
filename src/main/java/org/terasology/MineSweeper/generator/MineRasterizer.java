@@ -43,9 +43,6 @@ import java.util.Map;
 @RegisterPlugin
 public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
 
-    private SweeperFamilyUpdate mine;
-    private  SweeperFamilyUpdate counterFamily;
-
     @Override
     public void initialize() {
     }
@@ -53,8 +50,8 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
     @Override
     public void generateChunk(CoreChunk chunk, Region chunkRegion) {
         BlockManager blockManager = CoreRegistry.get(BlockManager.class);
-        mine = (SweeperFamilyUpdate)blockManager.getBlockFamily("MineSweeper:Mine");
-        counterFamily = (SweeperFamilyUpdate)blockManager.getBlockFamily("MineSweeper:Counter");
+        SweeperFamilyUpdate mine = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Mine");
+        SweeperFamilyUpdate counterFamily = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Counter");
 
         MineFieldFacet oreFacet = chunkRegion.getFacet(MineFieldFacet.class);
         for (Map.Entry<BaseVector3i, Mine> entry : oreFacet.getWorldEntries().entrySet()) {
@@ -62,18 +59,16 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
 
 
             boolean isMineLegal = true;
-            for (int x = -1;x <= 1; x++) {
+            for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {
                     for (int z = -1; z <= 1; z++) {
                         Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
-                        if(chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
+                        if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
                             if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
                                 if (mine.getBlockForNumberOfNeighbors((byte) (CalculateNumberofMines(position, chunk, true) + 1)) == null) {
                                     isMineLegal = false;
                                 }
-                            }
-                           else
-                            {
+                            } else {
                                 if (counterFamily.getBlockForNumberOfNeighbors((byte) (CalculateNumberofMines(position, chunk, true) + 1)) == null) {
                                     isMineLegal = false;
                                 }
@@ -83,25 +78,22 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
                     }
                 }
             }
-            if(!isMineLegal )
+            if (!isMineLegal)
                 return;
 
-            chunk.setBlock(ChunkMath.calcBlockPos(center),mine.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(center,chunk,true)));//mineFamily.getBlockForPlacement(blockEntityRegistry,center));
+            chunk.setBlock(ChunkMath.calcBlockPos(center), mine.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(center, chunk, true)));//mineFamily.getBlockForPlacement(blockEntityRegistry,center));
 
-            for (int x = -1;x <= 1; x++)
-            {
-                for (int y = -1;y <= 1; y++)
-                {
-                    for (int z = -1;z <= 1; z++)
-                    {
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    for (int z = -1; z <= 1; z++) {
                         Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
-                        if(chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
+                        if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
                             if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
                                 chunk.setBlock(ChunkMath.calcBlockPos(position), mine.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, true)));
                             } else {
                                 chunk.setBlock(ChunkMath.calcBlockPos(position), counterFamily.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, false)));
                             }
-                        }else {
+                        } else {
                             chunk.setBlock(ChunkMath.calcBlockPos(position), counterFamily.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, false)));
                         }
                     }
@@ -111,14 +103,13 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
         }
     }
 
-    private int CalculateNumberofMines(Vector3i center,CoreChunk chunk,boolean isMine)
-    {
-        int amount  = 0;
-        for (int x = -1;x <= 1; x++) {
+    private int CalculateNumberofMines(Vector3i center, CoreChunk chunk, boolean isMine) {
+        int amount = 0;
+        for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 for (int z = -1; z <= 1; z++) {
                     Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
-                    if(chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
+                    if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
                         if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
                             amount++;
                         }

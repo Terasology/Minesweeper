@@ -112,14 +112,14 @@ public class MinesweeperSystem extends BaseComponentSystem {
 
         BlockFamily family = blockComponent.getBlock().getBlockFamily();
 
-        if(!(family  instanceof SweeperFamilyUpdate))
+        if (!(family instanceof SweeperFamilyUpdate))
             return;
 
-        worldProvider.setBlock(blockComponent.getPosition(),blockManager.getBlock(BlockManager.AIR_ID));
+        worldProvider.setBlock(blockComponent.getPosition(), blockManager.getBlock(BlockManager.AIR_ID));
 
-        EntityRef ref=  entityManager.create();//blockEntityRegistry.getBlockEntityAt(blockComponent.getPosition());
+        EntityRef ref = entityManager.create();//blockEntityRegistry.getBlockEntityAt(blockComponent.getPosition());
         FloatingTextComponent textComponent = new FloatingTextComponent();
-        textComponent.text = ((SweeperFamilyUpdate)family).getNumberOfMines(blockEntityRegistry,new Vector3i(blockComponent.getPosition())) + "";
+        textComponent.text = ((SweeperFamilyUpdate) family).getNumberOfMines(blockEntityRegistry, new Vector3i(blockComponent.getPosition())) + "";
         ref.addComponent(textComponent);
 
         LocationComponent locationComponent = new LocationComponent();
@@ -127,10 +127,10 @@ public class MinesweeperSystem extends BaseComponentSystem {
         ref.addComponent(locationComponent);
 
 
-        EntityRef counterEntity =  blockEntityRegistry.getBlockEntityAt(blockComponent.getPosition());
+        EntityRef counterEntity = blockEntityRegistry.getBlockEntityAt(blockComponent.getPosition());
         FloatingNumberComponent floatingNumberComponent = new FloatingNumberComponent();
         floatingNumberComponent.floatingNumber = ref;
-        floatingNumberComponent.isReady =false;
+        floatingNumberComponent.isReady = false;
         counterEntity.addComponent(floatingNumberComponent);
 
 
@@ -140,8 +140,7 @@ public class MinesweeperSystem extends BaseComponentSystem {
 
     @ReceiveEvent(components = {FloatingNumberComponent.class}, priority = EventPriority.PRIORITY_HIGH)
     public void onFloatingNumberDestroted(OnChangedBlock event, EntityRef entity, FloatingNumberComponent floatingNumberComponent) {
-        if(!floatingNumberComponent.isReady)
-        {
+        if (!floatingNumberComponent.isReady) {
             floatingNumberComponent.isReady = true;
             entity.saveComponent(floatingNumberComponent);
             return;
@@ -151,39 +150,35 @@ public class MinesweeperSystem extends BaseComponentSystem {
 
 
     @ReceiveEvent
-    public void onCounterDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent,SweeperCountComponent counter) {
+    public void onCounterDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent, SweeperCountComponent counter) {
 
 
     }
 
     @ReceiveEvent
-    public void onMineDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent,ExplosiveMineComponent mine) {
+    public void onMineDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent, ExplosiveMineComponent mine) {
         ExplosionActionComponent component = new ExplosionActionComponent();
         component.relativeTo = ActionTarget.Self;
         component.maxRange = 120;
 
         HashSet<Vector3i> hasMineBeenMarked = new HashSet<>();
-        doExplosion(component,blockComponent.getPosition().toVector3f(),entity,hasMineBeenMarked);
+        doExplosion(component, blockComponent.getPosition().toVector3f(), entity, hasMineBeenMarked);
 
-        for (Vector3i pos: hasMineBeenMarked) {
-            if(!pos.equals(blockComponent.getPosition()))
-                worldProvider.setBlock(pos,blockManager.getBlock(BlockManager.AIR_ID));
+        for (Vector3i pos : hasMineBeenMarked) {
+            if (!pos.equals(blockComponent.getPosition()))
+                worldProvider.setBlock(pos, blockManager.getBlock(BlockManager.AIR_ID));
 
         }
     }
 
     @ReceiveEvent
     public void onMark(ActivateEvent event, EntityRef entity, BlockComponent blockComponent, SweeperCountComponent counterComponent) {
-        BlockFamily blockFamily =  blockComponent.getBlock().getBlockFamily();
-        if(blockFamily != null)
-        {
-            if(blockFamily.getArchetypeBlock().equals(blockComponent.getBlock()))
-            {
-                worldProvider.setBlock(blockComponent.getPosition(),blockFamily.getBlockForPlacement(worldProvider,blockEntityRegistry,blockComponent.getPosition(), Side.TOP,Side.TOP));
-            }
-            else
-            {
-                worldProvider.setBlock(blockComponent.getPosition(),blockFamily.getArchetypeBlock());
+        BlockFamily blockFamily = blockComponent.getBlock().getBlockFamily();
+        if (blockFamily != null) {
+            if (blockFamily.getArchetypeBlock().equals(blockComponent.getBlock())) {
+                worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getBlockForPlacement(worldProvider, blockEntityRegistry, blockComponent.getPosition(), Side.TOP, Side.TOP));
+            } else {
+                worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getArchetypeBlock());
             }
         }
     }
@@ -192,7 +187,7 @@ public class MinesweeperSystem extends BaseComponentSystem {
         return explosionSounds.get(random.nextInt(0, explosionSounds.size() - 1)).get();
     }
 
-    private void doExplosion(ExplosionActionComponent explosionComp, Vector3f origin, EntityRef instigatingBlockEntity,HashSet<Vector3i> marked) {
+    private void doExplosion(ExplosionActionComponent explosionComp, Vector3f origin, EntityRef instigatingBlockEntity, HashSet<Vector3i> marked) {
 
         marked.add(new Vector3i(origin));
 
@@ -219,7 +214,7 @@ public class MinesweeperSystem extends BaseComponentSystem {
                 if (currentBlock.isDestructible()) {
                     EntityRef blockEntity = blockEntityRegistry.getEntityAt(blockPos);
                     // allow explosions to chain together,  but do not chain on the instigating block
-                    if(!marked.contains(blockPos)) {
+                    if (!marked.contains(blockPos)) {
                         if (blockEntity.hasComponent(ExplosiveMineComponent.class)) {
                             doExplosion(explosionComp, blockPos.toVector3f(), blockEntity, marked);
                         } else {
