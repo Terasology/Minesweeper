@@ -31,6 +31,7 @@ import org.terasology.world.generation.facets.base.SparseObjectFacet3D;
 import org.terasology.world.generator.plugin.RegisterPlugin;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import static org.terasology.math.TeraMath.*;
 
@@ -38,13 +39,17 @@ import static org.terasology.math.TeraMath.*;
  * Created by michaelpollind on 8/28/16.
  */
 @RegisterPlugin
-@Updates(@Facet(value = SurfaceHeightFacet.class,  border = @FacetBorder(bottom = 40,top = 40, sides = 40)))
 @Produces(MineFieldFacet.class)
 public class MineFieldFacetProvider implements FacetProviderPlugin {
     private  long seed;
 
+    private Noise seedNoiseGen;
+    private Noise fieldNoiseGen;
+
     @Override
     public void setSeed(long seed) {
+
+        seedNoiseGen = new WhiteNoise(seed);
         this.seed = seed;
     }
 
@@ -56,51 +61,66 @@ public class MineFieldFacetProvider implements FacetProviderPlugin {
     @Override
     public void process(GeneratingRegion region) {
 
-        Border3D border = region.getBorderForFacet(MineFieldFacet.class).extendBy(40,40,40);
+        Border3D border = region.getBorderForFacet(MineFieldFacet.class).extendBy(30,30,30);
         final MineFieldFacet facet = new MineFieldFacet(region.getRegion(),border);
+
+
+//        for (Iterator<Vector3i> it = facet.getWorldRegion().iterator(); it.hasNext(); ) {
+//            Vector3i p = it.next();
+//            if(seedNoiseGen.noise((float) (p.x/10.0f),(float) (p.y/10.0f),(float) (p.z/10.0f)) > .99) {
+//
+//                MineField mineField = new MineField();
+//
+//                int sizeOfField = size.getIntValue(random);
+//                for (int y = 0; y < sizeOfField; y++) {
+//
+//                    mineField.addMines(new Vector3i(new Vector3i(
+//                            (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random)),
+//                            (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random)),
+//                            (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random))
+//                    )));
+//                }
+//                facet.setWorld(p, mineField);
+//            }
+//        }
+
+
+
+//        for (Iterator<Vector3i> it = facet.getWorldRegion().iterator(); it.hasNext(); ) {
+//            Vector3i p = it.next();
+//            if(seedNoiseGen.noise(p.x,p.y,p.z) > .99f){
+//
+//            }
+//
+//        }
+
 
         PDist size = new PDist(50,30);
         PDist distance = new PDist(0,5);
         PDist frequency = new PDist(2,1);
 
         Random random = ChunkRandom.getChunkRandom(seed, ChunkMath.calcChunkPos(region.getRegion().center()), 17832181);
-
         int numberOfFields = frequency.getIntValue(random);
-
         for(int x = 0;x < numberOfFields; x++)
         {
-            int xPosition = random.nextInt(region.getRegion().minX(),region.getRegion().maxX());
-            int yPosition = random.nextInt(region.getRegion().minY(),region.getRegion().maxY());
-            int zPosition = random.nextInt(region.getRegion().minZ(),region.getRegion().maxZ());
+            int xPosition = random.nextInt(facet.getWorldRegion().minX(),facet.getWorldRegion().maxX());
+            int yPosition = random.nextInt(facet.getWorldRegion().minY(),facet.getWorldRegion().maxY());
+            int zPosition = random.nextInt(facet.getWorldRegion().minZ(),facet.getWorldRegion().maxZ());
+
+            MineField mineField = new MineField();
 
             int sizeOfField = size.getIntValue(random);
             for(int y = 0; y < sizeOfField; y++) {
-                int xOffset = (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random));
-                int yOffset = (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random));
-                int zOffset = (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random));
-                facet.setWorld(xPosition+xOffset,yPosition+yOffset,zPosition+zOffset, new Mine());
 
+                mineField.addMines(new Vector3i(new Vector3i(
+                        (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random)),
+                        (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random)),
+                        (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random))
+                )));
             }
+            facet.setWorld(xPosition,yPosition,zPosition, mineField);
 
         }
-/*
-        ClusterStructureDefinition clusterStructureDefinition = new ClusterStructureDefinition(new PDist(0,10),new PDist(50,20),new PDist(0,10));
-        for (Structure structure : clusterStructureDefinition.generateStructures(seed,region.getRegion()))
-        {
-            structure.generateStructure(new Structure.StructureCallback() {
-                @Override
-                public void replaceBlock(Vector3i position, StructureNodeType structureNodeType, Vector3i distanceToCenter) {
-
-                    facet.setWorld(position, new Mine());
-                }
-
-                @Override
-                public boolean canReplace(int x, int y, int z) {
-                    return false;
-                }
-            });
-
-        }*/
 
         region.setRegionFacet(MineFieldFacet.class, facet);
     }

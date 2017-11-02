@@ -50,74 +50,34 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
     @Override
     public void generateChunk(CoreChunk chunk, Region chunkRegion) {
         BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+
         SweeperFamilyUpdate mine = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Mine");
         SweeperFamilyUpdate counterFamily = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Counter");
 
-        MineFieldFacet oreFacet = chunkRegion.getFacet(MineFieldFacet.class);
-        for (Map.Entry<BaseVector3i, Mine> entry : oreFacet.getWorldEntries().entrySet()) {
+
+        MineFieldFacet mineFieldFacet = chunkRegion.getFacet(MineFieldFacet.class);
+        for (Map.Entry<BaseVector3i, MineField> entry : mineFieldFacet.getWorldEntries().entrySet()) {
             Vector3i center = new Vector3i(entry.getKey());
+            MineField field = entry.getValue();
 
-
-            boolean isMineLegal = true;
-            for (int x = -1; x <= 1; x++) {
-                for (int y = -1; y <= 1; y++) {
-                    for (int z = -1; z <= 1; z++) {
-                        Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
-                        if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
-                            if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
-                                if (mine.getBlockForNumberOfNeighbors((byte) (CalculateNumberofMines(position, chunk, true) + 1)) == null) {
-                                    isMineLegal = false;
-                                }
-                            } else {
-                                if (counterFamily.getBlockForNumberOfNeighbors((byte) (CalculateNumberofMines(position, chunk, true) + 1)) == null) {
-                                    isMineLegal = false;
-                                }
-                            }
-                        }
-
-                    }
+            for (Vector3i pos : field.getMines()) {
+                Vector3i minePos = new Vector3i(center).add(pos);
+                if (chunk.getRegion().encompasses(minePos)) {
+                    chunk.setBlock(ChunkMath.calcBlockPos(minePos), mine.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(pos)));
                 }
-            }
-            if (!isMineLegal)
-                return;
-
-            chunk.setBlock(ChunkMath.calcBlockPos(center), mine.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(center, chunk, true)));//mineFamily.getBlockForPlacement(blockEntityRegistry,center));
-
-            for (int x = -1; x <= 1; x++) {
-                for (int y = -1; y <= 1; y++) {
-                    for (int z = -1; z <= 1; z++) {
-                        Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
-                        if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
-                            if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
-                                chunk.setBlock(ChunkMath.calcBlockPos(position), mine.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, true)));
-                            } else {
-                                chunk.setBlock(ChunkMath.calcBlockPos(position), counterFamily.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, false)));
+                for (int x = pos.x - 1; x <= pos.x + 1; x++) {
+                    for (int y = pos.y - 1; y <= pos.y + 1; y++) {
+                        for (int z = pos.z - 1; z <= pos.z + 1; z++) {
+                            Vector3i counterPos = new Vector3i(center).add(x, y, z);
+                            if (!field.hasMine(new Vector3i(x, y, z)) && chunk.getRegion().encompasses(counterPos)) {
+                                chunk.setBlock(ChunkMath.calcBlockPos(counterPos), counterFamily.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(new Vector3i(x, y, z))));
                             }
-                        } else {
-                            chunk.setBlock(ChunkMath.calcBlockPos(position), counterFamily.getBlockForNumberOfNeighbors((byte) CalculateNumberofMines(position, chunk, false)));
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-
-    private int CalculateNumberofMines(Vector3i center, CoreChunk chunk, boolean isMine) {
-        int amount = 0;
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                for (int z = -1; z <= 1; z++) {
-                    Vector3i position = new Vector3i(center).addX(x).addY(y).addZ(z);
-                    if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().isPresent()) {
-                        if (chunk.getBlock(ChunkMath.calcBlockPos(position)).getPrefab().get().hasComponent(ExplosiveMineComponent.class)) {
-                            amount++;
                         }
                     }
                 }
             }
         }
-        return amount;
     }
+
 
 }

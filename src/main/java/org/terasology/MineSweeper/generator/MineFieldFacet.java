@@ -28,7 +28,7 @@ import java.util.Vector;
 /**
  * Created by michaelpollind on 8/28/16.
  */
-public class MineFieldFacet extends SparseObjectFacet3D<Mine> {
+public class MineFieldFacet extends SparseObjectFacet3D<MineField> {
 
     public MineFieldFacet(Region3i targetRegion, Border3D border) {
         super(targetRegion, border);
