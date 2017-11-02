@@ -16,19 +16,11 @@
 package org.terasology.MineSweeper.generator;
 
 import org.terasology.MineSweeper.blocks.SweeperFamilyUpdate;
-import org.terasology.MineSweeper.component.ExplosiveMineComponent;
-import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.ChunkMath;
 import org.terasology.math.geom.BaseVector3i;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.protobuf.NetData;
 import org.terasology.registry.CoreRegistry;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.BlockUri;
-import org.terasology.world.block.family.BlockFamily;
-import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.generation.Region;
 import org.terasology.world.generation.WorldRasterizer;
@@ -53,7 +45,6 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
 
         SweeperFamilyUpdate mine = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Mine");
         SweeperFamilyUpdate counterFamily = (SweeperFamilyUpdate) blockManager.getBlockFamily("MineSweeper:Counter");
-
 
         MineFieldFacet mineFieldFacet = chunkRegion.getFacet(MineFieldFacet.class);
         for (Map.Entry<BaseVector3i, MineField> entry : mineFieldFacet.getWorldEntries().entrySet()) {
