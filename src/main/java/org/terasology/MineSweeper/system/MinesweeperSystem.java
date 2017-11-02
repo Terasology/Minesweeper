@@ -98,6 +98,15 @@ public class MinesweeperSystem extends BaseComponentSystem {
         explosionSounds.add(Assets.getSound("core:explode5"));
     }
 
+    private void getMinesInRegion(Vector3i point,Vector3i searchPadding){
+        EntityRef blockEntity = blockEntityRegistry.getEntityAt(point);
+        if(blockEntity.hasComponent(ExplosiveMineComponent.class))
+        {
+
+        }
+
+    }
+
 
     @ReceiveEvent(components = {ExplosiveMineComponent.class})
     public void whenMineBlockDropped(CreateBlockDropsEvent event, EntityRef blockEntity) {
