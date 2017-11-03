@@ -15,10 +15,8 @@
  */
 package org.terasology.MineSweeper.blocks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Interner;
 import gnu.trove.map.TByteObjectMap;
-import org.terasology.MineSweeper.component.ExplosiveMineComponent;
+import org.terasology.MineSweeper.component.MineComponent;
 import org.terasology.math.Side;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.world.BlockEntityRegistry;
@@ -26,10 +24,6 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.AbstractBlockFamily;
-import org.terasology.world.block.family.ConnectionCondition;
-import org.terasology.world.chunks.CoreChunk;
-
-import java.util.Set;
 
 /**
  * Created by michaelpollind on 8/27/16.
@@ -67,7 +61,7 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
             {
                 for (int z = -1;z <= 1; z++)
                 {
-                    if(blockEntityRegistry.getBlockEntityAt(new Vector3i(location).addX(x).addY(y).addZ(z)).hasComponent(ExplosiveMineComponent.class))
+                    if(blockEntityRegistry.getBlockEntityAt(new Vector3i(location).addX(x).addY(y).addZ(z)).hasComponent(MineComponent.class))
                     {
                         numberOfMines++;
                     }

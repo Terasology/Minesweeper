@@ -15,27 +15,17 @@
  */
 package org.terasology.MineSweeper.blocks;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
-import org.terasology.MineSweeper.component.ExplosiveMineComponent;
-import org.terasology.MineSweeper.component.SweeperCountComponent;
-import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.math.Rotation;
-import org.terasology.math.Side;
-import org.terasology.math.SideBitFlag;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.naming.Name;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockBuilderHelper;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.*;
 import org.terasology.world.block.loader.BlockFamilyDefinition;
-import org.terasology.world.block.shapes.BlockShape;
 
 import java.util.*;
 
@@ -114,7 +104,7 @@ public class SweeperFamilyFactory implements BlockFamilyFactory {
 
             Block block = blockBuilder.constructTransformedBlock(definition, SWEEPER_MAPPING.get(x), Rotation.none());
 
-            //block.getPrefab().get().getComponent(SweeperCountComponent.class).value = x;
+            //block.getPrefab().get().getComponent(CountComponent.class).value = x;
             block.setUri(new BlockUri(blockUri, new Name(String.valueOf(x))));
             blocks.put(x, block);
 

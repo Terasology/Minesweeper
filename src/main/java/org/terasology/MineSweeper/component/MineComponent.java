@@ -15,10 +15,14 @@
  */
 package org.terasology.MineSweeper.component;
 
+import com.google.common.collect.Sets;
 import org.terasology.entitySystem.Component;
+import org.terasology.entitySystem.entity.EntityRef;
+
+import java.util.Set;
 
 /**
  * Created by michaelpollind on 8/27/16.
  */
-public class ExplosiveMineComponent implements Component {
+public class MineComponent implements Component {
 }

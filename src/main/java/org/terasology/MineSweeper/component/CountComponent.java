@@ -16,12 +16,10 @@
 package org.terasology.MineSweeper.component;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.network.Replicate;
 
 /**
- * Created by michaelpollind on 9/4/16.
+ * Created by michaelpollind on 8/27/16.
  */
-public class FloatingNumberComponent implements Component {
-    public EntityRef floatingNumber;
-    public boolean isReady;
+public class CountComponent implements Component {
 }

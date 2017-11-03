@@ -16,10 +16,14 @@
 package org.terasology.MineSweeper.component;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.network.Replicate;
+import org.terasology.entitySystem.entity.EntityRef;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by michaelpollind on 8/27/16.
+ * Created by michaelpollind on 9/4/16.
  */
-public class SweeperCountComponent implements Component {
+public class FloatingCountComponent implements Component {
+    public int neighbors = 0;
 }
