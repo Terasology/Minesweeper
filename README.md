@@ -1,6 +1,6 @@
 # Minesweeper
 
-The Minesweeper module adds minefields. The Basic goal is to mine all the surrounding blocks and mark all the mines without setting off the entire field. 
+The Minesweeper module adds minefield's to Terasology. The Basic goal is to mine all the surrounding blocks and mark all the mines without setting off the entire field. 
 
 ![Minesweeper](https://raw.githubusercontent.com/Terasology/Minesweeper/master/image.png)
 
