@@ -1,6 +1,6 @@
 # Minesweeper
 
-The Minesweeper module generates clusters of mines. Each field is composed of mines and blocks that count it's neighbors. The goal is to flag the mines and avoid hitting a mine else the whole field will go off.
+The Minesweeper module adds minefields. The Basic goal is to mine all the surrounding blocks and mark all the mines without setting off the entire field. 
 
 ![Minesweeper](https://raw.githubusercontent.com/Terasology/Minesweeper/master/image.png)
 
