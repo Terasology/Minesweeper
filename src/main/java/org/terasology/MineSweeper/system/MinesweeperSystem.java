@@ -172,7 +172,10 @@ public class MinesweeperSystem extends BaseComponentSystem {
         EntityRef ref = entityManager.create();
         ref.addComponent(new LocationComponent()).setWorldPosition(blockComponent.getPosition().toVector3f());
         ref.addComponent(new FloatingCountComponent()).neighbors = mines.size();
-        ref.addComponent(new FloatingTextComponent()).text = mines.size() + "";
+
+        FloatingTextComponent floatingTextComponent = new FloatingTextComponent();
+        floatingTextComponent.isOccluded = true;
+        ref.addComponent(floatingTextComponent).text = mines.size() + "";
 
     }
 
