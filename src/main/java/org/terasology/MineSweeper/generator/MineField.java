@@ -34,8 +34,23 @@ public class MineField {
 
     private Set<Vector3i> mines = new HashSet<>();
 
+    private Set<Vector3i> getNeighbors(Vector3i pos) {
+        Set<Vector3i> neighbors = new HashSet<>();
+
+        for (int x = pos.x - 1; x <= pos.x + 1; x++) {
+            for (int y = pos.y - 1; y <= pos.y + 1; y++) {
+                for (int z = pos.z - 1; z <= pos.z + 1; z++) {
+                    Vector3i neighbor = new Vector3i(x, y, z);
+                    neighbors.add(neighbor);
+                }
+            }
+        }
+
+        return neighbors;
+    }
+
     public void addMines(Vector3i mine) {
-        if(getNumberOfNeighbors(mine) < 16) {
+        if(getNeighbors(mine).stream().allMatch(neighbor -> getNumberOfNeighbors(neighbor) < 16)) {
             this.mines.add(mine);
         }
     }
