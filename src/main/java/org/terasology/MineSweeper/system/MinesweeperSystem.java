@@ -174,7 +174,7 @@ public class MinesweeperSystem extends BaseComponentSystem {
         ref.addComponent(new FloatingCountComponent()).neighbors = mines.size();
 
         FloatingTextComponent floatingTextComponent = new FloatingTextComponent();
-        floatingTextComponent.isOverlay = true;
+        floatingTextComponent.isOverlay = false;
         ref.addComponent(floatingTextComponent).text = mines.size() + "";
 
     }
