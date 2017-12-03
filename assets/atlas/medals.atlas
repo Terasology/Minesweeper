@@ -1,0 +1,11 @@
+{
+	"texture": "MineSweeper:medals",
+	"textureSize": [70, 32],
+	"grid": {
+		"tileSize": [16, 16],
+		"gridDimensions": [5, 2],
+		"tileNames": [
+			"medal1","medal2","medal3","medal4","medal5","medal6","medal7","medal8","medal9","medal10"
+		]
+	}
+}

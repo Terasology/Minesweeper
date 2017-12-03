@@ -1,0 +1,9 @@
+{
+	"parent": "engine:iconItem",
+	"DisplayName": {
+		"name": "Tier 7 Medal"
+	},
+	"Item": {
+		"icon": "MineSweeper:medals#medal7"
+	}
+}
