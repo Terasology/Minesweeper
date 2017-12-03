@@ -21,7 +21,7 @@ import org.terasology.math.geom.Vector3i;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class MineFieldTest {
     private Set<Vector3i> getNeighbors(Vector3i pos) {
