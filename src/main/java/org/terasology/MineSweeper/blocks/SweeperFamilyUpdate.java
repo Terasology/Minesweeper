@@ -54,8 +54,9 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
     public  int getNumberOfMines(BlockEntityRegistry blockEntityRegistry, Vector3i location) {
         int numberOfMines = 0;
         for (Vector3i current : Region3i.createFromCenterExtents(location, 1)) {
-            if(blockEntityRegistry.getBlockEntityAt(current).hasComponent(MineComponent.class))
+            if (blockEntityRegistry.getBlockEntityAt(current).hasComponent(MineComponent.class)) {
                 numberOfMines++;
+            }
         }
         return numberOfMines;
     }
