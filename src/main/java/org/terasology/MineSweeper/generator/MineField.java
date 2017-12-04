@@ -33,36 +33,39 @@ public class MineField {
         Normal
     }
     
-    //For purpose of adding medals: keeps track of size on a scale of 1-10
     private Set<Vector3i> mines = new HashSet<>();
 
     private Set<Vector3i> getNeighbors(Vector3i pos) {
         Set<Vector3i> neighbors = new HashSet<>();
 
-        for (Vector3i neighbor : Region3i.createFromCenterExtents(pos, 1))
+        for (Vector3i neighbor : Region3i.createFromCenterExtents(pos, 1)) {
             neighbors.add(neighbor);
+        }
 
         return neighbors;
     }
 
     public void addMines(Vector3i mine) {
-        if(getNeighbors(mine).stream().allMatch(neighbor -> getNumberOfNeighbors(neighbor) < 16))
+        if(getNeighbors(mine).stream().allMatch(neighbor -> getNumberOfNeighbors(neighbor) < 16)) {
             this.mines.add(mine);
+        }
     }
 
-    public Set<Vector3i> getMines(){
+    public Set<Vector3i> getMines() {
         return Collections.unmodifiableSet(mines);
     }
 
-    public boolean hasMine(Vector3i relativePos){
+    public boolean hasMine(Vector3i relativePos) {
         return mines.contains(relativePos);
     }
 
-    public int getNumberOfNeighbors(Vector3i pos){
+    public int getNumberOfNeighbors(Vector3i pos) {
         int count = 0;
-        for(Vector3i current : Region3i.createFromCenterExtents(pos, 1))
-            if(mines.contains(current))
+        for (Vector3i current : Region3i.createFromCenterExtents(pos, 1)) {
+            if (mines.contains(current)) {
                 count++;
+            }
+        }
         return count;
     }
 }
