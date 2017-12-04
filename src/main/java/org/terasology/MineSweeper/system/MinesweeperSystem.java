@@ -15,6 +15,7 @@
  */
 package org.terasology.MineSweeper.system;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
@@ -37,19 +38,23 @@ import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.Region3i;
 import org.terasology.math.Side;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.FloatingTextComponent;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.OnChangedBlock;
 import org.terasology.world.WorldProvider;
+import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.entity.CreateBlockDropsEvent;
 import org.terasology.world.block.family.BlockFamily;
+import org.terasology.world.block.items.BlockItemSystem;
 
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Map;
 
 
 /**
@@ -77,8 +82,8 @@ public class MinesweeperSystem extends BaseComponentSystem {
     public void initialise() {
     }
 
-    private Set<EntityRef> getMinesInRegion(Vector3i point, int padding) {
-        Set<EntityRef> mines = Sets.newHashSet();
+    private Map<EntityRef,Vector3i> getMinesInRegion(Vector3i point, int padding) {
+        Map<EntityRef,Vector3i> mines = Maps.newHashMap();
         Queue<Vector3i> targets = Queues.newArrayDeque();
         targets.add(point);
 
@@ -86,9 +91,9 @@ public class MinesweeperSystem extends BaseComponentSystem {
             Vector3i target = targets.remove();
             for (Vector3i loc : Region3i.createFromCenterExtents(target, padding)) {
                 EntityRef blockEntity = blockEntityRegistry.getEntityAt(loc);
-                if (!mines.contains(blockEntity) && blockEntity.hasComponent(MineComponent.class)) {
+                if (!mines.keySet().contains(blockEntity) && blockEntity.hasComponent(MineComponent.class)) {
                     targets.add(loc);
-                    mines.add(blockEntity);
+                    mines.put(blockEntity, loc);
                 }
             }
         }
@@ -188,6 +193,28 @@ public class MinesweeperSystem extends BaseComponentSystem {
                 worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getBlockForPlacement(worldProvider, blockEntityRegistry, blockComponent.getPosition(), Side.TOP, Side.TOP));
             } else {
                 worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getArchetypeBlock());
+                Map<EntityRef,Vector3i> mines = getMinesInRegion(blockComponent.getPosition(), 3);
+                if(mines.values().stream().allMatch(position -> worldProvider.getBlock(position).equals(blockFamily.getArchetypeBlock()))) {
+                    BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+                    Block air = blockManager.getBlock(BlockManager.AIR_ID);
+                    for(EntityRef mine : mines.keySet())
+                        for(Vector3i pos : Region3i.createFromCenterExtents(mines.get(mine), 1)) {
+                            blockEntityRegistry.getBlockEntityAt(pos).destroy();
+                            worldProvider.setBlock(pos, air);
+                        }
+                    Vector3i pos = new Vector3i(blockComponent.getPosition());
+                    int size = mines.size();
+                    if(size >= 68)
+                        worldProvider.setBlock(pos, blockManager.getBlock("Core:DiamondOre"));
+                    else if(size >= 56)
+                        worldProvider.setBlock(pos, blockManager.getBlock("Core:GoldOre"));
+                    else if(size >= 44)
+                        worldProvider.setBlock(pos, blockManager.getBlock("Core:CopperOre"));
+                    else if(size >= 32)
+                        worldProvider.setBlock(pos, blockManager.getBlock("Core:IronOre"));
+                    else
+                        worldProvider.setBlock(pos, blockManager.getBlock("Core:CoalOre"));
+                }
             }
         }
     }
