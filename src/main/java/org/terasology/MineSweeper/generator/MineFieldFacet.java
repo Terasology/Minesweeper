@@ -15,15 +15,9 @@
  */
 package org.terasology.MineSweeper.generator;
 
-import com.google.common.collect.ImmutableList;
 import org.terasology.math.Region3i;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.world.generation.Border3D;
-import org.terasology.world.generation.facets.base.BaseFacet3D;
 import org.terasology.world.generation.facets.base.SparseObjectFacet3D;
-
-import java.util.List;
-import java.util.Vector;
 
 /**
  * Created by michaelpollind on 8/28/16.

@@ -17,6 +17,7 @@ package org.terasology.MineSweeper.blocks;
 
 import gnu.trove.map.TByteObjectMap;
 import org.terasology.MineSweeper.component.MineComponent;
+import org.terasology.math.Region3i;
 import org.terasology.math.Side;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.world.BlockEntityRegistry;
@@ -42,31 +43,19 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
 
     @Override
     public Block getBlockForPlacement(WorldProvider worldProvider, BlockEntityRegistry blockEntityRegistry, Vector3i location, Side attachmentSide, Side direction) {
-
         return getBlockForPlacement(blockEntityRegistry,location);
     }
 
 
-    public  Block getBlockForPlacement(BlockEntityRegistry blockEntityRegistry, Vector3i location)
-    {
+    public  Block getBlockForPlacement(BlockEntityRegistry blockEntityRegistry, Vector3i location) {
         return blocks.get((byte) getNumberOfMines(blockEntityRegistry,location));
     }
 
-    public  int getNumberOfMines(BlockEntityRegistry blockEntityRegistry, Vector3i location)
-    {
+    public  int getNumberOfMines(BlockEntityRegistry blockEntityRegistry, Vector3i location) {
         int numberOfMines = 0;
-        for (int x = -1;x <= 1; x++)
-        {
-            for (int y = -1;y <= 1; y++)
-            {
-                for (int z = -1;z <= 1; z++)
-                {
-                    if(blockEntityRegistry.getBlockEntityAt(new Vector3i(location).addX(x).addY(y).addZ(z)).hasComponent(MineComponent.class))
-                    {
-                        numberOfMines++;
-                    }
-                }
-            }
+        for (Vector3i current : Region3i.createFromCenterExtents(location, 1)) {
+            if(blockEntityRegistry.getBlockEntityAt(current).hasComponent(MineComponent.class))
+                numberOfMines++;
         }
         return numberOfMines;
     }
@@ -92,8 +81,7 @@ public class SweeperFamilyUpdate extends AbstractBlockFamily {
         return null;
     }
 
-    public  Block getBlockForNumberOfNeighbors(byte numberOfMines)
-    {
+    public  Block getBlockForNumberOfNeighbors(byte numberOfMines) {
         return  blocks.get((byte)numberOfMines);
     }
 

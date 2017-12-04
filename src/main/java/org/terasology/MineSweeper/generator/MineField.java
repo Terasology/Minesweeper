@@ -15,6 +15,7 @@
  */
 package org.terasology.MineSweeper.generator;
 
+import org.terasology.math.Region3i;
 import org.terasology.math.geom.Vector3i;
 
 import java.util.Collections;
@@ -31,28 +32,22 @@ public class MineField {
     public enum Type{
         Normal
     }
-
+    
+    //For purpose of adding medals: keeps track of size on a scale of 1-10
     private Set<Vector3i> mines = new HashSet<>();
 
     private Set<Vector3i> getNeighbors(Vector3i pos) {
         Set<Vector3i> neighbors = new HashSet<>();
 
-        for (int x = pos.x - 1; x <= pos.x + 1; x++) {
-            for (int y = pos.y - 1; y <= pos.y + 1; y++) {
-                for (int z = pos.z - 1; z <= pos.z + 1; z++) {
-                    Vector3i neighbor = new Vector3i(x, y, z);
-                    neighbors.add(neighbor);
-                }
-            }
-        }
+        for (Vector3i neighbor : Region3i.createFromCenterExtents(pos, 1))
+            neighbors.add(neighbor);
 
         return neighbors;
     }
 
     public void addMines(Vector3i mine) {
-        if(getNeighbors(mine).stream().allMatch(neighbor -> getNumberOfNeighbors(neighbor) < 16)) {
+        if(getNeighbors(mine).stream().allMatch(neighbor -> getNumberOfNeighbors(neighbor) < 16))
             this.mines.add(mine);
-        }
     }
 
     public Set<Vector3i> getMines(){
@@ -65,16 +60,9 @@ public class MineField {
 
     public int getNumberOfNeighbors(Vector3i pos){
         int count = 0;
-        for(int x = pos.x - 1; x <= pos.x + 1; x++){
-            for(int y = pos.y - 1; y <= pos.y + 1; y++){
-                for(int z = pos.z - 1; z <= pos.z + 1; z++){
-                    if(mines.contains(new Vector3i(x,y,z)))
-                    {
-                        count++;
-                    }
-                }
-            }
-        }
+        for(Vector3i current : Region3i.createFromCenterExtents(pos, 1))
+            if(mines.contains(current))
+                count++;
         return count;
     }
 }

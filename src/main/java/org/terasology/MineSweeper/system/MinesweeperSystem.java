@@ -20,9 +20,7 @@ import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.MineSweeper.blocks.SweeperFamilyUpdate;
-import org.terasology.MineSweeper.component.CountComponent;
-import org.terasology.MineSweeper.component.MineComponent;
-import org.terasology.MineSweeper.component.FloatingCountComponent;
+import org.terasology.MineSweeper.component.*;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.EventPriority;
@@ -36,6 +34,7 @@ import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.health.DoDestroyEvent;
 import org.terasology.logic.location.LocationComponent;
+import org.terasology.math.Region3i;
 import org.terasology.math.Side;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.In;
@@ -85,19 +84,12 @@ public class MinesweeperSystem extends BaseComponentSystem {
 
         while (targets.size() > 0) {
             Vector3i target = targets.remove();
-            for (int x = target.x - padding; x <= target.x + padding; x++) {
-                for (int y = target.y - padding; y <= target.y + padding; y++) {
-                    for (int z = target.z - padding; z <= target.z + padding; x++) {
-                        Vector3i loc = new Vector3i(x, y, z);
-                        EntityRef blockEntity = blockEntityRegistry.getEntityAt(loc);
-                        if (!mines.contains(blockEntity) && blockEntity.hasComponent(MineComponent.class)) {
-                            targets.add(loc);
-                            mines.add(blockEntity);
-                        }
-
-                    }
+            for (Vector3i loc : Region3i.createFromCenterExtents(target, padding)) {
+                EntityRef blockEntity = blockEntityRegistry.getEntityAt(loc);
+                if (!mines.contains(blockEntity) && blockEntity.hasComponent(MineComponent.class)) {
+                    targets.add(loc);
+                    mines.add(blockEntity);
                 }
-
             }
         }
         return mines;
@@ -105,18 +97,11 @@ public class MinesweeperSystem extends BaseComponentSystem {
 
     private Set<EntityRef> getNeighboringMines(Vector3i point) {
         Set<EntityRef> mines = Sets.newHashSet();
-        for (int x = point.x - 1; x <= point.x + 1; x++) {
-            for (int y = point.y - 1; y <= point.y + 1; y++) {
-                for (int z = point.z - 1; z <= point.z + 1; z++) {
-                    Vector3i loc = new Vector3i(x, y, z);
-                    EntityRef blockEntity = blockEntityRegistry.getEntityAt(loc);
-                    if (blockEntity.hasComponent(MineComponent.class)) {
-                        mines.add(blockEntity);
-                    }
-
-                }
+        for (Vector3i loc : Region3i.createFromCenterExtents(point, 1)) {
+            EntityRef blockEntity = blockEntityRegistry.getEntityAt(loc);
+            if (blockEntity.hasComponent(MineComponent.class)) {
+                mines.add(blockEntity);
             }
-
         }
         return mines;
     }
@@ -174,7 +159,6 @@ public class MinesweeperSystem extends BaseComponentSystem {
         ref.addComponent(new FloatingCountComponent()).neighbors = mines.size();
 
         FloatingTextComponent floatingTextComponent = new FloatingTextComponent();
-        floatingTextComponent.isOverlay = false;
         ref.addComponent(floatingTextComponent).text = mines.size() + "";
 
     }

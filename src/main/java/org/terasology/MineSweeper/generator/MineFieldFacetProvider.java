@@ -15,31 +15,22 @@
  */
 package org.terasology.MineSweeper.generator;
 
-import org.terasology.customOreGen.*;
-import org.terasology.math.ChunkMath;
-import org.terasology.math.Region3i;
-import org.terasology.math.Side;
-import org.terasology.math.TeraMath;
+import org.terasology.customOreGen.PDist;
 import org.terasology.math.geom.BaseVector2i;
-import org.terasology.math.geom.Rect2i;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.utilities.procedural.Noise;
-import org.terasology.utilities.procedural.Noise2D;
 import org.terasology.utilities.procedural.SimplexNoise;
-import org.terasology.utilities.procedural.WhiteNoise;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
-import org.terasology.world.generation.*;
-import org.terasology.world.generation.facets.DensityFacet;
-import org.terasology.world.generation.facets.SurfaceDepthFacet;
+import org.terasology.world.generation.Border3D;
+import org.terasology.world.generation.Facet;
+import org.terasology.world.generation.FacetBorder;
+import org.terasology.world.generation.FacetProviderPlugin;
+import org.terasology.world.generation.GeneratingRegion;
+import org.terasology.world.generation.Produces;
+import org.terasology.world.generation.Requires;
 import org.terasology.world.generation.facets.SurfaceHeightFacet;
-import org.terasology.world.generation.facets.base.SparseObjectFacet3D;
 import org.terasology.world.generator.plugin.RegisterPlugin;
-
-import java.util.Collection;
-import java.util.Iterator;
-
-import static org.terasology.math.TeraMath.*;
 
 /**
  * Created by michaelpollind on 8/28/16.

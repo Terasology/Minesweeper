@@ -17,6 +17,7 @@ package org.terasology.MineSweeper.generator;
 
 import org.terasology.MineSweeper.blocks.SweeperFamilyUpdate;
 import org.terasology.math.ChunkMath;
+import org.terasology.math.Region3i;
 import org.terasology.math.geom.BaseVector3i;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.CoreRegistry;
@@ -56,14 +57,10 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
                 if (chunk.getRegion().encompasses(minePos)) {
                     chunk.setBlock(ChunkMath.calcBlockPos(minePos), mine.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(pos)));
                 }
-                for (int x = pos.x - 1; x <= pos.x + 1; x++) {
-                    for (int y = pos.y - 1; y <= pos.y + 1; y++) {
-                        for (int z = pos.z - 1; z <= pos.z + 1; z++) {
-                            Vector3i counterPos = new Vector3i(center).add(x, y, z);
-                            if (!field.hasMine(new Vector3i(x, y, z)) && chunk.getRegion().encompasses(counterPos)) {
-                                chunk.setBlock(ChunkMath.calcBlockPos(counterPos), counterFamily.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(new Vector3i(x, y, z))));
-                            }
-                        }
+                for (Vector3i current : Region3i.createFromCenterExtents(pos, 1)) {
+                    Vector3i counterPos = new Vector3i(center).add(current);
+                    if (!field.hasMine(current) && chunk.getRegion().encompasses(counterPos)) {
+                        chunk.setBlock(ChunkMath.calcBlockPos(counterPos), counterFamily.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(current))); 
                     }
                 }
             }

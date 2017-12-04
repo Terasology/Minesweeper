@@ -1,6 +1,6 @@
 {
 	"texture": "MineSweeper:medals",
-	"textureSize": [70, 32],
+	"textureSize": [80, 32],
 	"grid": {
 		"tileSize": [16, 16],
 		"gridDimensions": [5, 2],
