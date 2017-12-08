@@ -60,39 +60,23 @@ import java.util.Map;
 
 
 /**
- * Created by michaelpollind on 8/28/16.
  * System for handling minefields.
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class MinesweeperSystem extends BaseComponentSystem {
 
-    /**
-     * Logger for this class
-     */
     private static final Logger logger = LoggerFactory.getLogger(MinesweeperSystem.class);
 
     
-    /**
-     * Used for getting and creating entities
-     */
     @In
     private EntityManager entityManager;
 
-    /**
-     * Used for getting and setting block entities
-     */
     @In
     private BlockEntityRegistry blockEntityRegistry;
 
-    /**
-     * Used for getting and setting blocks
-     */
     @In
     WorldProvider worldProvider;
 
-    /**
-     * Used for getting Block objects from IDs
-     */
     @In
     BlockManager blockManager;
 
