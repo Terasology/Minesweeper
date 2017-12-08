@@ -60,14 +60,14 @@ import java.util.Map;
 
 
 /**
- * Created by michaelpollind on 8/28/16.
+ * System for handling minefields.
  */
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class MinesweeperSystem extends BaseComponentSystem {
 
     private static final Logger logger = LoggerFactory.getLogger(MinesweeperSystem.class);
 
-
+    
     @In
     private EntityManager entityManager;
 
@@ -84,6 +84,15 @@ public class MinesweeperSystem extends BaseComponentSystem {
     public void initialise() {
     }
 
+    /**
+     * Used to obtain the amount of mines in a field.
+     * <p>
+     * This method searches through the given region, then repeats with the same sized region centered around each mine found. This is done until no more mines are found.
+     * 
+     * @param point The starting point of the search.
+     * @param padding The amount of blocks to go out each iteration of the search.
+     * @return A Map containing an EntityRef for each mine and its corresponding position as a Vector3i
+     */
     private Map<EntityRef,Vector3i> getMinesInRegion(Vector3i point, int padding) {
         Map<EntityRef,Vector3i> mines = Maps.newHashMap();
         Queue<Vector3i> targets = Queues.newArrayDeque();
@@ -102,6 +111,12 @@ public class MinesweeperSystem extends BaseComponentSystem {
         return mines;
     }
 
+    /**
+     * Used for obtaining all of the mines within a 3x3x3 block cube
+     * 
+     * @param point The center of the cube to be searched.
+     * @return A set containing all of the mines located within the area.
+     */
     private Set<EntityRef> getNeighboringMines(Vector3i point) {
         Set<EntityRef> mines = Sets.newHashSet();
         for (Vector3i loc : Region3i.createFromCenterExtents(point, 1)) {
@@ -145,17 +160,30 @@ public class MinesweeperSystem extends BaseComponentSystem {
 //    }
 
 
+    /**
+     * Destroys item for mines dropped
+     */
     @ReceiveEvent(components = {MineComponent.class})
     public void whenMineBlockDropped(CreateBlockDropsEvent event, EntityRef blockEntity) {
         event.consume();
     }
 
+    /**
+     * Destroys item for counters dropped
+     */
     @ReceiveEvent(components = {CountComponent.class})
     public void whenCounterBlockDropped(CreateBlockDropsEvent event, EntityRef blockEntity) {
         event.consume();
     }
 
-
+    /**
+     * Creates a floating counter to replace the block destroyed
+     *
+     * @param event The event being recieved
+     * @param entity The entity at the position of the event
+     * @param blockComponent The block componenet of the counter being destroyed
+     * @param counter The counter componenet of the counter being destroyed
+     */
     @ReceiveEvent
     public void onCounterDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent, CountComponent counter) {
         Set<EntityRef> mines = getNeighboringMines(blockComponent.getPosition());
@@ -170,6 +198,14 @@ public class MinesweeperSystem extends BaseComponentSystem {
 
     }
 
+    /**
+     * Creates an explosion when the player breaks a mine
+     *
+     * @param event The event being recieved
+     * @param entity The entity at the position of the event
+     * @param blockComponent The block componenet of the mine being destroyed
+     * @param mineComponent The mine componenet of the mine being destroyed
+     */
     @ReceiveEvent
     public void onMineDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent, MineComponent mineComponent) {
         ExplosionActionComponent component = new ExplosionActionComponent();
@@ -187,6 +223,14 @@ public class MinesweeperSystem extends BaseComponentSystem {
         }
     }
 
+    /**
+     * Marks blocks when interacted with, clears the field and adds a reward if all mines have been marked
+     *
+     * @param event The event being recieved
+     * @param entity The entity at the position of the event
+     * @param blockComponent The block componenet of the block being marked
+     * @param counter The counter componenet of the block being marked
+     */
     @ReceiveEvent
     public void onMark(ActivateEvent event, EntityRef entity, BlockComponent blockComponent, CountComponent counterComponent) {
         BlockFamily blockFamily = blockComponent.getBlock().getBlockFamily();
