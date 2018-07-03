@@ -20,13 +20,11 @@ import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.MineSweeper.blocks.SweeperFamilyUpdate;
 import org.terasology.MineSweeper.component.CountComponent;
 import org.terasology.MineSweeper.component.FloatingCountComponent;
 import org.terasology.MineSweeper.component.MineComponent;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.EventPriority;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
@@ -44,19 +42,16 @@ import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.FloatingTextComponent;
 import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.OnChangedBlock;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.entity.CreateBlockDropsEvent;
 import org.terasology.world.block.family.BlockFamily;
-import org.terasology.world.block.items.BlockItemSystem;
 
-import java.util.Iterator;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map;
 
 
 /**
@@ -236,7 +231,7 @@ public class MinesweeperSystem extends BaseComponentSystem {
         BlockFamily blockFamily = blockComponent.getBlock().getBlockFamily();
         if (blockFamily != null) {
             if (blockFamily.getArchetypeBlock().equals(blockComponent.getBlock())) {
-                worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getBlockForPlacement(worldProvider, blockEntityRegistry, blockComponent.getPosition(), Side.TOP, Side.TOP));
+                worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getBlockForPlacement(blockComponent.getPosition(), Side.TOP, Side.TOP));
             } else {
                 worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getArchetypeBlock());
                 Map<EntityRef,Vector3i> mines = getMinesInRegion(blockComponent.getPosition(), 3);
