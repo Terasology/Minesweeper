@@ -1,5 +1,5 @@
 {
-    "rotation": "MineSweeper:countable",
+    "family": "countable",
     "tile" : "MineSweeper:counter",
     "entity": {
         "prefab": "MineSweeper:mine"
