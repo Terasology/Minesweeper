@@ -174,10 +174,10 @@ public class MinesweeperSystem extends BaseComponentSystem {
     /**
      * Creates a floating counter to replace the block destroyed
      *
-     * @param event The event being recieved
+     * @param event The event being received
      * @param entity The entity at the position of the event
-     * @param blockComponent The block componenet of the counter being destroyed
-     * @param counter The counter componenet of the counter being destroyed
+     * @param blockComponent The block component of the counter being destroyed
+     * @param counter The counter component of the counter being destroyed
      */
     @ReceiveEvent
     public void onCounterDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent, CountComponent counter) {
@@ -196,10 +196,10 @@ public class MinesweeperSystem extends BaseComponentSystem {
     /**
      * Creates an explosion when the player breaks a mine
      *
-     * @param event The event being recieved
+     * @param event The event being received
      * @param entity The entity at the position of the event
-     * @param blockComponent The block componenet of the mine being destroyed
-     * @param mineComponent The mine componenet of the mine being destroyed
+     * @param blockComponent The block component of the mine being destroyed
+     * @param mineComponent The mine component of the mine being destroyed
      */
     @ReceiveEvent
     public void onMineDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent, MineComponent mineComponent) {
@@ -221,10 +221,10 @@ public class MinesweeperSystem extends BaseComponentSystem {
     /**
      * Marks blocks when interacted with, clears the field and adds a reward if all mines have been marked
      *
-     * @param event The event being recieved
+     * @param event The event being received
      * @param entity The entity at the position of the event
-     * @param blockComponent The block componenet of the block being marked
-     * @param counter The counter componenet of the block being marked
+     * @param blockComponent The block component of the block being marked
+     * @param counterComponent The counter component of the block being marked
      */
     @ReceiveEvent
     public void onMark(ActivateEvent event, EntityRef entity, BlockComponent blockComponent, CountComponent counterComponent) {
@@ -246,15 +246,15 @@ public class MinesweeperSystem extends BaseComponentSystem {
                     Vector3i pos = new Vector3i(blockComponent.getPosition());
                     int size = mines.size();
                     if(size >= 68)
-                        worldProvider.setBlock(pos, blockManager.getBlock("Core:DiamondOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:DiamondOre"));
                     else if(size >= 56)
-                        worldProvider.setBlock(pos, blockManager.getBlock("Core:GoldOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:GoldOre"));
                     else if(size >= 44)
-                        worldProvider.setBlock(pos, blockManager.getBlock("Core:CopperOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:CopperOre"));
                     else if(size >= 32)
-                        worldProvider.setBlock(pos, blockManager.getBlock("Core:IronOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:IronOre"));
                     else
-                        worldProvider.setBlock(pos, blockManager.getBlock("Core:CoalOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:CoalOre"));
                 }
             }
         }
