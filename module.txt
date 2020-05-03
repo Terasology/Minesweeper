@@ -5,7 +5,8 @@
     "displayName" : "MineSweeper",
     "description" : "",
     "dependencies" : [
-        {"id": "CustomOreGen", "minVersion": "1.0.0"}
+        {"id": "CustomOreGen", "minVersion": "1.0.0"},
+        {"id" : "CoreItems", "minVersion" : "1.0.0"}
     ],
     "serverSideOnly" : false,
     "isSpecial": true
