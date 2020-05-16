@@ -23,13 +23,13 @@ import org.slf4j.LoggerFactory;
 import org.terasology.MineSweeper.component.CountComponent;
 import org.terasology.MineSweeper.component.FloatingCountComponent;
 import org.terasology.MineSweeper.component.MineComponent;
-import org.terasology.core.logic.actions.ExplosionActionComponent;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.explosives.logic.ExplosionActionComponent;
 import org.terasology.logic.actions.ActionTarget;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayedActionTriggeredEvent;
@@ -246,15 +246,15 @@ public class MinesweeperSystem extends BaseComponentSystem {
                     Vector3i pos = new Vector3i(blockComponent.getPosition());
                     int size = mines.size();
                     if(size >= 68)
-                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:DiamondOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:DiamondOre"));
                     else if(size >= 56)
-                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:GoldOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:GoldOre"));
                     else if(size >= 44)
-                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:CopperOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:CopperOre"));
                     else if(size >= 32)
-                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:IronOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:IronOre"));
                     else
-                        worldProvider.setBlock(pos, blockManager.getBlock("CoreBlocks:CoalOre"));
+                        worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:CoalOre"));
                 }
             }
         }
