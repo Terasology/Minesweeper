@@ -1,12 +1,14 @@
 {
-    "id" : "MineSweeper",
-    "version" : "0.1.3-SNAPSHOT",
-    "author" : "",
-    "displayName" : "MineSweeper",
-    "description" : "",
-    "dependencies" : [
-        {"id" : "Core", "minVersion" : "3.0.0"},
-        {"id": "CustomOreGen", "minVersion": "1.0.0"}
+    "id": "MineSweeper",
+    "version": "1.0.0",
+    "author": "The Terasology Foundation",
+    "displayName": "Mine Sweeper",
+    "description": "This module allows to play Mine Sweeper in Terasology.",
+    "dependencies": [
+        { "id": "CoreAssets", "minVersion": "2.0.1" },
+        { "id": "CustomOreGen", "minVersion": "1.0.0" },
+        { "id": "Explosives", "minVersion": "1.0.0" }
     ],
-    "serverSideOnly" : false
+    "serverSideOnly": false,
+    "isSpecial": true
 }
