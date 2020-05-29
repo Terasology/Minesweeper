@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 import org.terasology.MineSweeper.component.MineComponent;
+import org.terasology.math.JomlUtil;
 import org.terasology.math.Region3i;
 import org.terasology.math.Side;
 import org.terasology.math.geom.Vector3i;
@@ -29,6 +30,7 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockBuilderHelper;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.AbstractBlockFamily;
+import org.terasology.world.block.family.BlockPlacementData;
 import org.terasology.world.block.family.BlockSections;
 import org.terasology.world.block.family.RegisterBlockFamily;
 import org.terasology.world.block.loader.BlockFamilyDefinition;
@@ -106,6 +108,13 @@ public class SweeperFamily extends AbstractBlockFamily {
             }
         }
         return numberOfMines;
+    }
+
+    @Override
+    public Block getBlockForPlacement(BlockPlacementData data) {
+        return blocks.get(
+                (byte) getNumberOfMines(blockEntityRegistry, JomlUtil.from(data.blockPosition))
+        );
     }
 
     @Override
