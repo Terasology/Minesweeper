@@ -55,12 +55,12 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
             for (Vector3i pos : field.getMines()) {
                 Vector3i minePos = new Vector3i(center).add(pos);
                 if (chunk.getRegion().encompasses(minePos)) {
-                    chunk.setBlock(ChunkMath.calcBlockPos(minePos), mine.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(pos)));
+                    chunk.setBlock(ChunkMath.calcRelativeBlockPos(minePos), mine.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(pos)));
                 }
                 for (Vector3i current : Region3i.createFromCenterExtents(pos, 1)) {
                     Vector3i counterPos = new Vector3i(center).add(current);
                     if (!field.hasMine(current) && chunk.getRegion().encompasses(counterPos)) {
-                        chunk.setBlock(ChunkMath.calcBlockPos(counterPos), counterFamily.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(current))); 
+                        chunk.setBlock(ChunkMath.calcRelativeBlockPos(counterPos), counterFamily.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(current)));
                     }
                 }
             }
