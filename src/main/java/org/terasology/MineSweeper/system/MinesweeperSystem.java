@@ -1,18 +1,5 @@
-/*
- * Copyright 2016 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.MineSweeper.system;
 
 import com.google.common.collect.Maps;
@@ -23,31 +10,31 @@ import org.slf4j.LoggerFactory;
 import org.terasology.MineSweeper.component.CountComponent;
 import org.terasology.MineSweeper.component.FloatingCountComponent;
 import org.terasology.MineSweeper.component.MineComponent;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterMode;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.logic.actions.ActionTarget;
+import org.terasology.engine.logic.common.ActivateEvent;
+import org.terasology.engine.logic.delay.DelayedActionTriggeredEvent;
+import org.terasology.engine.logic.destruction.DoDestroyEvent;
+import org.terasology.engine.logic.location.LocationComponent;
+import org.terasology.engine.math.Region3i;
+import org.terasology.engine.math.Side;
+import org.terasology.engine.registry.CoreRegistry;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.rendering.logic.FloatingTextComponent;
+import org.terasology.engine.world.BlockEntityRegistry;
+import org.terasology.engine.world.WorldProvider;
+import org.terasology.engine.world.block.Block;
+import org.terasology.engine.world.block.BlockComponent;
+import org.terasology.engine.world.block.BlockManager;
+import org.terasology.engine.world.block.entity.CreateBlockDropsEvent;
+import org.terasology.engine.world.block.family.BlockFamily;
 import org.terasology.explosives.logic.ExplosionActionComponent;
-import org.terasology.logic.actions.ActionTarget;
-import org.terasology.logic.common.ActivateEvent;
-import org.terasology.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.logic.health.DoDestroyEvent;
-import org.terasology.logic.location.LocationComponent;
-import org.terasology.math.Region3i;
-import org.terasology.math.Side;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.registry.CoreRegistry;
-import org.terasology.registry.In;
-import org.terasology.rendering.logic.FloatingTextComponent;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
-import org.terasology.world.block.BlockComponent;
-import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.entity.CreateBlockDropsEvent;
-import org.terasology.world.block.family.BlockFamily;
 
 import java.util.Map;
 import java.util.Queue;
@@ -61,19 +48,14 @@ import java.util.Set;
 public class MinesweeperSystem extends BaseComponentSystem {
 
     private static final Logger logger = LoggerFactory.getLogger(MinesweeperSystem.class);
-
-    
-    @In
-    private EntityManager entityManager;
-
-    @In
-    private BlockEntityRegistry blockEntityRegistry;
-
     @In
     WorldProvider worldProvider;
-
     @In
     BlockManager blockManager;
+    @In
+    private EntityManager entityManager;
+    @In
+    private BlockEntityRegistry blockEntityRegistry;
 
     @Override
     public void initialise() {
@@ -82,14 +64,15 @@ public class MinesweeperSystem extends BaseComponentSystem {
     /**
      * Used to obtain the amount of mines in a field.
      * <p>
-     * This method searches through the given region, then repeats with the same sized region centered around each mine found. This is done until no more mines are found.
-     * 
+     * This method searches through the given region, then repeats with the same sized region centered around each mine
+     * found. This is done until no more mines are found.
+     *
      * @param point The starting point of the search.
      * @param padding The amount of blocks to go out each iteration of the search.
      * @return A Map containing an EntityRef for each mine and its corresponding position as a Vector3i
      */
-    private Map<EntityRef,Vector3i> getMinesInRegion(Vector3i point, int padding) {
-        Map<EntityRef,Vector3i> mines = Maps.newHashMap();
+    private Map<EntityRef, Vector3i> getMinesInRegion(Vector3i point, int padding) {
+        Map<EntityRef, Vector3i> mines = Maps.newHashMap();
         Queue<Vector3i> targets = Queues.newArrayDeque();
         targets.add(point);
 
@@ -97,7 +80,7 @@ public class MinesweeperSystem extends BaseComponentSystem {
             Vector3i target = targets.remove();
             for (Vector3i loc : Region3i.createFromCenterExtents(target, padding)) {
                 EntityRef blockEntity = blockEntityRegistry.getEntityAt(loc);
-                if (!mines.keySet().contains(blockEntity) && blockEntity.hasComponent(MineComponent.class)) {
+                if (!mines.containsKey(blockEntity) && blockEntity.hasComponent(MineComponent.class)) {
                     targets.add(loc);
                     mines.put(blockEntity, loc);
                 }
@@ -108,7 +91,7 @@ public class MinesweeperSystem extends BaseComponentSystem {
 
     /**
      * Used for obtaining all of the mines within a 3x3x3 block cube
-     * 
+     *
      * @param point The center of the cube to be searched.
      * @return A set containing all of the mines located within the area.
      */
@@ -145,7 +128,8 @@ public class MinesweeperSystem extends BaseComponentSystem {
 //
 //
 //    @ReceiveEvent(components = {FloatingCountComponent.class}, priority = EventPriority.PRIORITY_HIGH)
-//    public void onFloatingNumberDestroted(OnChangedBlock event, EntityRef entity, FloatingCountComponent floatingNumberComponent) {
+//    public void onFloatingNumberDestroted(OnChangedBlock event, EntityRef entity, FloatingCountComponent 
+//    floatingNumberComponent) {
 //        if (!floatingNumberComponent.isReady) {
 //            floatingNumberComponent.isReady = true;
 //            entity.saveComponent(floatingNumberComponent);
@@ -180,7 +164,8 @@ public class MinesweeperSystem extends BaseComponentSystem {
      * @param counter The counter component of the counter being destroyed
      */
     @ReceiveEvent
-    public void onCounterDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent, CountComponent counter) {
+    public void onCounterDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent,
+                                   CountComponent counter) {
         Set<EntityRef> mines = getNeighboringMines(blockComponent.getPosition());
         if (mines.size() == 0)
             return;
@@ -202,7 +187,8 @@ public class MinesweeperSystem extends BaseComponentSystem {
      * @param mineComponent The mine component of the mine being destroyed
      */
     @ReceiveEvent
-    public void onMineDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent, MineComponent mineComponent) {
+    public void onMineDestroyed(DoDestroyEvent event, EntityRef entity, BlockComponent blockComponent,
+                                MineComponent mineComponent) {
         ExplosionActionComponent component = new ExplosionActionComponent();
         component.relativeTo = ActionTarget.Self;
         component.maxRange = 120;
@@ -227,31 +213,33 @@ public class MinesweeperSystem extends BaseComponentSystem {
      * @param counterComponent The counter component of the block being marked
      */
     @ReceiveEvent
-    public void onMark(ActivateEvent event, EntityRef entity, BlockComponent blockComponent, CountComponent counterComponent) {
+    public void onMark(ActivateEvent event, EntityRef entity, BlockComponent blockComponent,
+                       CountComponent counterComponent) {
         BlockFamily blockFamily = blockComponent.getBlock().getBlockFamily();
         if (blockFamily != null) {
             if (blockFamily.getArchetypeBlock().equals(blockComponent.getBlock())) {
-                worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getBlockForPlacement(blockComponent.getPosition(), Side.TOP, Side.TOP));
+                worldProvider.setBlock(blockComponent.getPosition(),
+                        blockFamily.getBlockForPlacement(blockComponent.getPosition(), Side.TOP, Side.TOP));
             } else {
                 worldProvider.setBlock(blockComponent.getPosition(), blockFamily.getArchetypeBlock());
-                Map<EntityRef,Vector3i> mines = getMinesInRegion(blockComponent.getPosition(), 3);
-                if(mines.values().stream().allMatch(position -> worldProvider.getBlock(position).equals(blockFamily.getArchetypeBlock()))) {
+                Map<EntityRef, Vector3i> mines = getMinesInRegion(blockComponent.getPosition(), 3);
+                if (mines.values().stream().allMatch(position -> worldProvider.getBlock(position).equals(blockFamily.getArchetypeBlock()))) {
                     BlockManager blockManager = CoreRegistry.get(BlockManager.class);
                     Block air = blockManager.getBlock(BlockManager.AIR_ID);
-                    for(EntityRef mine : mines.keySet())
-                        for(Vector3i pos : Region3i.createFromCenterExtents(mines.get(mine), 1)) {
+                    for (EntityRef mine : mines.keySet())
+                        for (Vector3i pos : Region3i.createFromCenterExtents(mines.get(mine), 1)) {
                             blockEntityRegistry.getBlockEntityAt(pos).destroy();
                             worldProvider.setBlock(pos, air);
                         }
                     Vector3i pos = new Vector3i(blockComponent.getPosition());
                     int size = mines.size();
-                    if(size >= 68)
+                    if (size >= 68)
                         worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:DiamondOre"));
-                    else if(size >= 56)
+                    else if (size >= 56)
                         worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:GoldOre"));
-                    else if(size >= 44)
+                    else if (size >= 44)
                         worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:CopperOre"));
-                    else if(size >= 32)
+                    else if (size >= 32)
                         worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:IronOre"));
                     else
                         worldProvider.setBlock(pos, blockManager.getBlock("CoreAssets:CoalOre"));

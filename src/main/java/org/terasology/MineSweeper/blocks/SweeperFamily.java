@@ -1,43 +1,31 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.MineSweeper.blocks;
 
 import com.google.common.collect.ImmutableList;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 import org.terasology.MineSweeper.component.MineComponent;
+import org.terasology.engine.math.JomlUtil;
+import org.terasology.engine.math.Region3i;
+import org.terasology.engine.math.Side;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.world.BlockEntityRegistry;
+import org.terasology.engine.world.block.Block;
+import org.terasology.engine.world.block.BlockBuilderHelper;
+import org.terasology.engine.world.block.BlockUri;
+import org.terasology.engine.world.block.family.AbstractBlockFamily;
+import org.terasology.engine.world.block.family.BlockPlacementData;
+import org.terasology.engine.world.block.family.BlockSections;
+import org.terasology.engine.world.block.family.RegisterBlockFamily;
+import org.terasology.engine.world.block.loader.BlockFamilyDefinition;
+import org.terasology.engine.world.block.shapes.BlockShape;
 import org.terasology.gestalt.naming.Name;
-import org.terasology.math.JomlUtil;
-import org.terasology.math.Region3i;
-import org.terasology.math.Side;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.registry.In;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.block.Block;
-import org.terasology.world.block.BlockBuilderHelper;
-import org.terasology.world.block.BlockUri;
-import org.terasology.world.block.family.AbstractBlockFamily;
-import org.terasology.world.block.family.BlockPlacementData;
-import org.terasology.world.block.family.BlockSections;
-import org.terasology.world.block.family.RegisterBlockFamily;
-import org.terasology.world.block.loader.BlockFamilyDefinition;
-import org.terasology.world.block.shapes.BlockShape;
 
 @RegisterBlockFamily("countable")
-@BlockSections({"one", "two", "three", "four", "five", "six", "seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","marked"})
+@BlockSections({"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", 
+        "thirteen", "fourteen", "fifteen", "sixteen", "marked"})
 public class SweeperFamily extends AbstractBlockFamily {
     public static final String ONE = "one";
     public static final String TWO = "two";
@@ -75,12 +63,9 @@ public class SweeperFamily extends AbstractBlockFamily {
             .add(FIFTEEN)
             .add(SIXTEEN)
             .build();
-
+    private final TByteObjectMap<Block> blocks = new TByteObjectHashMap<>();
     @In
     BlockEntityRegistry blockEntityRegistry;
-
-
-    private TByteObjectMap<Block> blocks = new TByteObjectHashMap<>();
 
     public SweeperFamily(BlockFamilyDefinition definition, BlockShape shape, BlockBuilderHelper blockBuilder) {
         super(definition, blockBuilder);
@@ -94,13 +79,14 @@ public class SweeperFamily extends AbstractBlockFamily {
         BlockUri blockUri = new BlockUri(definition.getUrn());
 
         for (byte x = 0; x < SWEEPER_MAPPING.size(); x++) {
-            Block block = blockBuilder.constructSimpleBlock(definition, SWEEPER_MAPPING.get(x), new BlockUri(blockUri, new Name(String.valueOf(x))), this);
+            Block block = blockBuilder.constructSimpleBlock(definition, SWEEPER_MAPPING.get(x), new BlockUri(blockUri
+                    , new Name(String.valueOf(x))), this);
             block.setUri(new BlockUri(blockUri, new Name(String.valueOf(x))));
             blocks.put(x, block);
         }
     }
 
-    public  int getNumberOfMines(BlockEntityRegistry blockEntityRegistry, Vector3i location) {
+    public int getNumberOfMines(BlockEntityRegistry blockEntityRegistry, Vector3i location) {
         int numberOfMines = 0;
         for (Vector3i current : Region3i.createFromCenterExtents(location, 1)) {
             if (blockEntityRegistry.getBlockEntityAt(current).hasComponent(MineComponent.class)) {
@@ -119,11 +105,11 @@ public class SweeperFamily extends AbstractBlockFamily {
 
     @Override
     public Block getBlockForPlacement(Vector3i location, Side attachmentSide, Side direction) {
-        return blocks.get((byte) getNumberOfMines(blockEntityRegistry,location));
+        return blocks.get((byte) getNumberOfMines(blockEntityRegistry, location));
     }
 
-    public  Block getBlockForNumberOfNeighbors(byte numberOfMines) {
-        return  blocks.get(numberOfMines);
+    public Block getBlockForNumberOfNeighbors(byte numberOfMines) {
+        return blocks.get(numberOfMines);
     }
 
     @Override
