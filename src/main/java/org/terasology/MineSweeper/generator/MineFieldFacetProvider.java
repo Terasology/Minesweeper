@@ -16,7 +16,6 @@
 package org.terasology.MineSweeper.generator;
 
 import org.terasology.customOreGen.PDist;
-import org.terasology.math.geom.BaseVector2i;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.utilities.procedural.Noise;
 import org.terasology.utilities.procedural.SimplexNoise;
@@ -29,14 +28,14 @@ import org.terasology.world.generation.FacetProviderPlugin;
 import org.terasology.world.generation.GeneratingRegion;
 import org.terasology.world.generation.Produces;
 import org.terasology.world.generation.Requires;
-import org.terasology.world.generation.facets.SurfaceHeightFacet;
+import org.terasology.world.generation.facets.SurfacesFacet;
 import org.terasology.world.generator.plugin.RegisterPlugin;
 
 /**
  * Created by michaelpollind on 8/28/16.
  */
 @RegisterPlugin
-@Requires(@Facet(value = SurfaceHeightFacet.class, border = @FacetBorder(sides = 30, bottom = 30, top = 30)))
+@Requires(@Facet(value = SurfacesFacet.class, border = @FacetBorder(sides = 30, bottom = 30, top = 30)))
 @Produces(MineFieldFacet.class)
 public class MineFieldFacetProvider implements FacetProviderPlugin {
     private  long seed;
@@ -59,31 +58,33 @@ public class MineFieldFacetProvider implements FacetProviderPlugin {
 
         Border3D border = region.getBorderForFacet(MineFieldFacet.class).extendBy(30,30,30);
         final MineFieldFacet facet = new MineFieldFacet(region.getRegion(),border);
-        final SurfaceHeightFacet surfaceHeightFacet = region.getRegionFacet(SurfaceHeightFacet.class);
+        final SurfacesFacet surfacesFacet = region.getRegionFacet(SurfacesFacet.class);
 
 
         PDist size = new PDist(50,30);
         PDist distance = new PDist(0,5);
         PDist frequency = new PDist(2,1);
-        for (BaseVector2i position : surfaceHeightFacet.getWorldRegion().contents()) {
-            int surfaceHeight = (int) surfaceHeightFacet.getWorld(position);
-            if (facet.getWorldRegion().encompasses(position.getX(), surfaceHeight, position.getY())
-                    && noise.noise(position.getX(), position.getY()) > 0.99) {
-                Random random = new FastRandom(seed * (97 * position.x() + position.y() + surfaceHeight));
+        for (int x = surfacesFacet.getWorldRegion().minX(); x <= surfacesFacet.getWorldRegion().maxX(); x++) {
+            for (int z = surfacesFacet.getWorldRegion().minZ(); z <= surfacesFacet.getWorldRegion().maxZ(); z++) {
+                for (int surfaceHeight : surfacesFacet.getWorldColumn(x, z)) {
+                    if (facet.getWorldRegion().encompasses(x, surfaceHeight, z)
+                            && noise.noise(x, surfaceHeight, z) > 0.99) {
+                        Random random = new FastRandom(seed * (97 * x + z + surfaceHeight));
 
-                    MineField mineField = new MineField();
+                        MineField mineField = new MineField();
 
-                    int sizeOfField = size.getIntValue(random);
-                    for (int y = 0; y < sizeOfField; y++) {
+                        int sizeOfField = size.getIntValue(random);
+                        for (int y = 0; y < sizeOfField; y++) {
 
-                        mineField.addMines(new Vector3i(new Vector3i(
-                                (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random)),
-                                (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random)),
-                                (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random))
-                        )));
+                            mineField.addMines(new Vector3i(new Vector3i(
+                                    (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random)),
+                                    (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random)),
+                                    (int) (Math.cos(random.nextFloat() * Math.PI * 2.0f) * distance.getValue(random))
+                            )));
+                        }
+                        facet.setWorld(x, surfaceHeight, z, mineField);
                     }
-                    facet.setWorld(position.getX(), surfaceHeight, position.y(), mineField);
-
+                }
             }
         }
 
