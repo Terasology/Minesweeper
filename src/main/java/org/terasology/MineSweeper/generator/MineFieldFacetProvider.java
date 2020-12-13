@@ -64,10 +64,10 @@ public class MineFieldFacetProvider implements FacetProviderPlugin {
         PDist size = new PDist(50,30);
         PDist distance = new PDist(0,5);
         PDist frequency = new PDist(2,1);
-        for (int x = surfacesFacet.getWorldRegion().minX(); x <= surfacesFacet.getWorldRegion().maxX(); x++) {
-            for (int z = surfacesFacet.getWorldRegion().minZ(); z <= surfacesFacet.getWorldRegion().maxZ(); z++) {
+        for (int x = surfacesFacet.getWorldRegion().getMinX(); x <= surfacesFacet.getWorldRegion().getMaxX(); x++) {
+            for (int z = surfacesFacet.getWorldRegion().getMinZ(); z <= surfacesFacet.getWorldRegion().getMaxZ(); z++) {
                 for (int surfaceHeight : surfacesFacet.getWorldColumn(x, z)) {
-                    if (facet.getWorldRegion().encompasses(x, surfaceHeight, z)
+                    if (facet.getWorldRegion().containsPoint(x, surfaceHeight, z)
                             && noise.noise(x, surfaceHeight, z) > 0.99) {
                         Random random = new FastRandom(seed * (97 * x + z + surfaceHeight));
 
