@@ -20,7 +20,6 @@ import org.terasology.MineSweeper.blocks.SweeperFamily;
 import org.terasology.math.ChunkMath;
 import org.terasology.math.JomlUtil;
 import org.terasology.math.Region3i;
-import org.terasology.math.geom.BaseVector3i;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.world.block.BlockManager;
@@ -56,12 +55,12 @@ public class MineRasterizer  implements WorldRasterizer, WorldRasterizerPlugin {
 
             for (Vector3i pos : field.getMines()) {
                 Vector3i minePos = new Vector3i(center).add(pos);
-                if (chunk.getRegion().containsBlock(JomlUtil.from(minePos))) {
+                if (chunk.getRegion().contains(JomlUtil.from(minePos))) {
                     chunk.setBlock(ChunkMath.calcRelativeBlockPos(minePos), mine.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(pos)));
                 }
                 for (Vector3i current : Region3i.createFromCenterExtents(pos, 1)) {
                     Vector3i counterPos = new Vector3i(center).add(current);
-                    if (!field.hasMine(current) && chunk.getRegion().containsBlock(JomlUtil.from(counterPos))) {
+                    if (!field.hasMine(current) && chunk.getRegion().contains(JomlUtil.from(counterPos))) {
                         chunk.setBlock(ChunkMath.calcRelativeBlockPos(counterPos), counterFamily.getBlockForNumberOfNeighbors((byte) field.getNumberOfNeighbors(current)));
                     }
                 }
