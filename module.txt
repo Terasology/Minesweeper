@@ -1,6 +1,6 @@
 {
     "id": "MineSweeper",
-    "version": "1.0.0",
+    "version": "1.0.0-SNAPSHOT",
     "author": "The Terasology Foundation",
     "displayName": "Mine Sweeper",
     "description": "This module allows to play Mine Sweeper in Terasology.",
