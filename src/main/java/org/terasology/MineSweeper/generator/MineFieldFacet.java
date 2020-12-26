@@ -16,6 +16,7 @@
 package org.terasology.MineSweeper.generator;
 
 import org.terasology.math.Region3i;
+import org.terasology.world.block.BlockRegion;
 import org.terasology.world.generation.Border3D;
 import org.terasology.world.generation.facets.base.SparseObjectFacet3D;
 
@@ -24,7 +25,7 @@ import org.terasology.world.generation.facets.base.SparseObjectFacet3D;
  */
 public class MineFieldFacet extends SparseObjectFacet3D<MineField> {
 
-    public MineFieldFacet(Region3i targetRegion, Border3D border) {
+    public MineFieldFacet(BlockRegion targetRegion, Border3D border) {
         super(targetRegion, border);
     }
 
