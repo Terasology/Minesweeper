@@ -18,16 +18,17 @@ package org.terasology.MineSweeper.blocks;
 import com.google.common.collect.ImmutableList;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.terasology.MineSweeper.component.MineComponent;
 import org.terasology.math.JomlUtil;
-import org.terasology.math.Region3i;
 import org.terasology.math.Side;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.naming.Name;
 import org.terasology.registry.In;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockBuilderHelper;
+import org.terasology.world.block.BlockRegion;
 import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.family.AbstractBlockFamily;
 import org.terasology.world.block.family.BlockPlacementData;
@@ -57,24 +58,24 @@ public class SweeperFamily extends AbstractBlockFamily {
     public static final String SIXTEEN = "sixteen";
     public static final String MARKED = "marked";
     public static final ImmutableList<String> SWEEPER_MAPPING = ImmutableList.<String>builder()
-            .add(MARKED)
-            .add(ONE)
-            .add(TWO)
-            .add(THREE)
-            .add(FOUR)
-            .add(FIVE)
-            .add(SIX)
-            .add(SEVEN)
-            .add(EIGHT)
-            .add(NINE)
-            .add(TEN)
-            .add(ELEVEN)
-            .add(TWELEVE)
-            .add(THIRTEEN)
-            .add(FOURTEEN)
-            .add(FIFTEEN)
-            .add(SIXTEEN)
-            .build();
+        .add(MARKED)
+        .add(ONE)
+        .add(TWO)
+        .add(THREE)
+        .add(FOUR)
+        .add(FIVE)
+        .add(SIX)
+        .add(SEVEN)
+        .add(EIGHT)
+        .add(NINE)
+        .add(TEN)
+        .add(ELEVEN)
+        .add(TWELEVE)
+        .add(THIRTEEN)
+        .add(FOURTEEN)
+        .add(FIFTEEN)
+        .add(SIXTEEN)
+        .build();
 
     @In
     BlockEntityRegistry blockEntityRegistry;
@@ -94,15 +95,16 @@ public class SweeperFamily extends AbstractBlockFamily {
         BlockUri blockUri = new BlockUri(definition.getUrn());
 
         for (byte x = 0; x < SWEEPER_MAPPING.size(); x++) {
-            Block block = blockBuilder.constructSimpleBlock(definition, SWEEPER_MAPPING.get(x), new BlockUri(blockUri, new Name(String.valueOf(x))), this);
+            Block block = blockBuilder.constructSimpleBlock(definition, SWEEPER_MAPPING.get(x), new BlockUri(blockUri
+                , new Name(String.valueOf(x))), this);
             block.setUri(new BlockUri(blockUri, new Name(String.valueOf(x))));
             blocks.put(x, block);
         }
     }
 
-    public  int getNumberOfMines(BlockEntityRegistry blockEntityRegistry, Vector3i location) {
+    public int getNumberOfMines(Vector3ic location) {
         int numberOfMines = 0;
-        for (Vector3i current : Region3i.createFromCenterExtents(location, 1)) {
+        for (Vector3ic current : new BlockRegion(location).expand(1, 1, 1)) {
             if (blockEntityRegistry.getBlockEntityAt(current).hasComponent(MineComponent.class)) {
                 numberOfMines++;
             }
@@ -113,17 +115,17 @@ public class SweeperFamily extends AbstractBlockFamily {
     @Override
     public Block getBlockForPlacement(BlockPlacementData data) {
         return blocks.get(
-                (byte) getNumberOfMines(blockEntityRegistry, JomlUtil.from(data.blockPosition))
+            (byte) getNumberOfMines(data.blockPosition)
         );
     }
 
     @Override
-    public Block getBlockForPlacement(Vector3i location, Side attachmentSide, Side direction) {
-        return blocks.get((byte) getNumberOfMines(blockEntityRegistry,location));
+    public Block getBlockForPlacement(org.terasology.math.geom.Vector3i location, Side attachmentSide, Side direction) {
+        return blocks.get((byte) getNumberOfMines(JomlUtil.from(location)));
     }
 
-    public  Block getBlockForNumberOfNeighbors(byte numberOfMines) {
-        return  blocks.get(numberOfMines);
+    public Block getBlockForNumberOfNeighbors(byte numberOfMines) {
+        return blocks.get(numberOfMines);
     }
 
     @Override
