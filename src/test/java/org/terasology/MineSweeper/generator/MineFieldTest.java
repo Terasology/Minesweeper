@@ -15,8 +15,8 @@
  */
 package org.terasology.MineSweeper.generator;
 
+import org.joml.Vector3i;
 import org.junit.Test;
-import org.terasology.math.geom.Vector3i;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,31 +44,31 @@ public class MineFieldTest {
     public void getNumberOfNeighbors() throws Exception {
         MineField mineField = new MineField();
 
-        mineField.addMines(Vector3i.zero());
-        mineField.addMines(Vector3i.up());
-        mineField.addMines(Vector3i.west());
-        mineField.addMines(Vector3i.east());
-        mineField.addMines(Vector3i.down());
-        mineField.addMines(Vector3i.north());
-        mineField.addMines(Vector3i.south());
-        mineField.addMines(Vector3i.one());
+        mineField.addMines(new Vector3i(0,0,0));
+        mineField.addMines(new Vector3i(0,1, 0));
+        mineField.addMines(new Vector3i(1,0,0));
+        mineField.addMines(new Vector3i(-1,0,0));
+        mineField.addMines(new Vector3i(0,-1,0));
+        mineField.addMines(new Vector3i(0,0,1));
+        mineField.addMines(new Vector3i(0,0,-1));
+        mineField.addMines(new Vector3i(1,1,1));
 
-        assertEquals(8, mineField.getNumberOfNeighbors(Vector3i.zero()));
+        assertEquals(8, mineField.getNumberOfNeighbors(new Vector3i(0,0,0)));
     }
 
     @Test
     public void addMines() throws Exception {
         MineField mineField = new MineField();
 
-        for (Vector3i mine : getNeighbors(Vector3i.one())) {
+        for (Vector3i mine : getNeighbors(new Vector3i(1,1,1))) {
             mineField.addMines(mine);
         }
 
-        for (Vector3i mine : getNeighbors(Vector3i.zero())) {
+        for (Vector3i mine : getNeighbors(new Vector3i(0,0,0))) {
             mineField.addMines(mine);
         }
 
-        for (Vector3i mine : getNeighbors(Vector3i.north())) {
+        for (Vector3i mine : getNeighbors(new Vector3i(0,0,1))) {
             mineField.addMines(mine);
         }
 

@@ -15,8 +15,9 @@
  */
 package org.terasology.MineSweeper.generator;
 
-import org.terasology.math.Region3i;
-import org.terasology.math.geom.Vector3i;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
+import org.terasology.world.block.BlockRegion;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,19 +36,19 @@ public class MineField {
     
     private Set<Vector3i> mines = new HashSet<>();
 
-    private Set<Vector3i> getNeighbors(Vector3i pos) {
+    private Set<Vector3i> getNeighbors(Vector3ic pos) {
         Set<Vector3i> neighbors = new HashSet<>();
 
-        for (Vector3i neighbor : Region3i.createFromCenterExtents(pos, 1)) {
-            neighbors.add(neighbor);
+        for (Vector3ic neighbor : new BlockRegion(pos).expand(1,1,1)) {
+            neighbors.add(new Vector3i(neighbor));
         }
 
         return neighbors;
     }
 
-    public void addMines(Vector3i mine) {
+    public void addMines(Vector3ic mine) {
         if(getNeighbors(mine).stream().allMatch(neighbor -> getNumberOfNeighbors(neighbor) < 16)) {
-            this.mines.add(mine);
+            this.mines.add(new Vector3i(mine));
         }
     }
 
@@ -55,13 +56,13 @@ public class MineField {
         return Collections.unmodifiableSet(mines);
     }
 
-    public boolean hasMine(Vector3i relativePos) {
+    public boolean hasMine(Vector3ic relativePos) {
         return mines.contains(relativePos);
     }
 
-    public int getNumberOfNeighbors(Vector3i pos) {
+    public int getNumberOfNeighbors(Vector3ic pos) {
         int count = 0;
-        for (Vector3i current : Region3i.createFromCenterExtents(pos, 1)) {
+        for (Vector3ic current : new BlockRegion(pos).expand(1,1,1)) {
             if (mines.contains(current)) {
                 count++;
             }
