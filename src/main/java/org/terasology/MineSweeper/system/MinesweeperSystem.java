@@ -219,9 +219,9 @@ public class MinesweeperSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onMark(ActivateEvent event, EntityRef entity, BlockComponent blockComponent, CountComponent counterComponent) {
-        BlockFamily blockFamily = blockComponent.block.getBlockFamily();
+        BlockFamily blockFamily = blockComponent.getBlock().getBlockFamily();
         if (blockFamily != null) {
-            if (blockFamily.getArchetypeBlock().equals(blockComponent.block)) {
+            if (blockFamily.getArchetypeBlock().equals(blockComponent.getBlock())) {
                 worldProvider.setBlock(blockComponent.getPosition(new Vector3i()),  blockFamily.getBlockForPlacement(new BlockPlacementData(blockComponent.getPosition(new Vector3i()), Side.TOP, Side.TOP.toDirection().asVector3f())));
             } else {
                 worldProvider.setBlock(blockComponent.getPosition(new Vector3i()), blockFamily.getArchetypeBlock());
