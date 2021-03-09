@@ -15,11 +15,7 @@
  */
 package org.terasology.MineSweeper.component;
 
-import com.google.common.collect.Sets;
-import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.entity.EntityRef;
-
-import java.util.Set;
+import org.terasology.engine.entitySystem.Component;
 
 /**
  * Created by michaelpollind on 8/27/16.

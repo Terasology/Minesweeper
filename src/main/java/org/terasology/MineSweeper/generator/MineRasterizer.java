@@ -18,15 +18,15 @@ package org.terasology.MineSweeper.generator;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.terasology.MineSweeper.blocks.SweeperFamily;
-import org.terasology.registry.CoreRegistry;
-import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.BlockRegion;
-import org.terasology.world.chunks.Chunks;
-import org.terasology.world.chunks.CoreChunk;
-import org.terasology.world.generation.Region;
-import org.terasology.world.generation.WorldRasterizer;
-import org.terasology.world.generation.WorldRasterizerPlugin;
-import org.terasology.world.generator.plugin.RegisterPlugin;
+import org.terasology.engine.registry.CoreRegistry;
+import org.terasology.engine.world.block.BlockManager;
+import org.terasology.engine.world.block.BlockRegion;
+import org.terasology.engine.world.chunks.Chunks;
+import org.terasology.engine.world.chunks.CoreChunk;
+import org.terasology.engine.world.generation.Region;
+import org.terasology.engine.world.generation.WorldRasterizer;
+import org.terasology.engine.world.generation.WorldRasterizerPlugin;
+import org.terasology.engine.world.generator.plugin.RegisterPlugin;
 
 import java.util.Map;
 

@@ -17,7 +17,7 @@ package org.terasology.MineSweeper.generator;
 
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
-import org.terasology.world.block.BlockRegion;
+import org.terasology.engine.world.block.BlockRegion;
 
 import java.util.Collections;
 import java.util.HashSet;

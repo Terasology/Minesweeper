@@ -17,19 +17,19 @@ package org.terasology.MineSweeper.generator;
 
 import org.joml.Vector3i;
 import org.terasology.customOreGen.PDist;
-import org.terasology.utilities.procedural.Noise;
-import org.terasology.utilities.procedural.SimplexNoise;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
-import org.terasology.world.generation.Border3D;
-import org.terasology.world.generation.Facet;
-import org.terasology.world.generation.FacetBorder;
-import org.terasology.world.generation.FacetProviderPlugin;
-import org.terasology.world.generation.GeneratingRegion;
-import org.terasology.world.generation.Produces;
-import org.terasology.world.generation.Requires;
-import org.terasology.world.generation.facets.SurfacesFacet;
-import org.terasology.world.generator.plugin.RegisterPlugin;
+import org.terasology.engine.utilities.procedural.Noise;
+import org.terasology.engine.utilities.procedural.SimplexNoise;
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
+import org.terasology.engine.world.generation.Border3D;
+import org.terasology.engine.world.generation.Facet;
+import org.terasology.engine.world.generation.FacetBorder;
+import org.terasology.engine.world.generation.FacetProviderPlugin;
+import org.terasology.engine.world.generation.GeneratingRegion;
+import org.terasology.engine.world.generation.Produces;
+import org.terasology.engine.world.generation.Requires;
+import org.terasology.engine.world.generation.facets.SurfacesFacet;
+import org.terasology.engine.world.generator.plugin.RegisterPlugin;
 
 /**
  * Created by michaelpollind on 8/28/16.

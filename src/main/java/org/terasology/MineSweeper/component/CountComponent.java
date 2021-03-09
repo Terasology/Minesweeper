@@ -15,8 +15,7 @@
  */
 package org.terasology.MineSweeper.component;
 
-import org.terasology.entitySystem.Component;
-import org.terasology.network.Replicate;
+import org.terasology.engine.entitySystem.Component;
 
 /**
  * Created by michaelpollind on 8/27/16.
