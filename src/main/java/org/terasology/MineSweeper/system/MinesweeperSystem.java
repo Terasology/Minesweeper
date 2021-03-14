@@ -23,7 +23,7 @@ import org.terasology.engine.entitySystem.systems.RegisterSystem;
 import org.terasology.engine.logic.actions.ActionTarget;
 import org.terasology.engine.logic.common.ActivateEvent;
 import org.terasology.engine.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.engine.logic.health.DoDestroyEvent;
+import org.terasology.logic.health.DoDestroyEvent;
 import org.terasology.engine.logic.location.LocationComponent;
 import org.terasology.engine.math.Side;
 import org.terasology.engine.registry.In;
