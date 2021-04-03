@@ -19,7 +19,7 @@ import org.terasology.engine.world.block.family.BlockSections;
 import org.terasology.engine.world.block.family.RegisterBlockFamily;
 import org.terasology.engine.world.block.loader.BlockFamilyDefinition;
 import org.terasology.engine.world.block.shapes.BlockShape;
-import org.terasology.naming.Name;
+import org.terasology.gestalt.naming.Name;
 
 @RegisterBlockFamily("countable")
 @BlockSections({"one", "two", "three", "four", "five", "six", "seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","marked"})
