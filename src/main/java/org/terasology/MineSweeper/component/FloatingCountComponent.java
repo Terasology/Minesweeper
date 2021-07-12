@@ -9,4 +9,9 @@ import org.terasology.gestalt.entitysystem.component.Component;
  */
 public class FloatingCountComponent implements Component<FloatingCountComponent> {
     public int neighbors = 0;
+
+    @Override
+    public void copy(FloatingCountComponent other) {
+        this.neighbors = other.neighbors;
+    }
 }

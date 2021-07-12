@@ -8,4 +8,8 @@ import org.terasology.gestalt.entitysystem.component.Component;
  * Created by michaelpollind on 8/27/16.
  */
 public class CountComponent implements Component<CountComponent> {
+    @Override
+    public void copy(CountComponent other) {
+
+    }
 }
