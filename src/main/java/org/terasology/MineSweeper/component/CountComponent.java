@@ -9,7 +9,7 @@ import org.terasology.gestalt.entitysystem.component.Component;
  */
 public class CountComponent implements Component<CountComponent> {
     @Override
-    public void copy(CountComponent other) {
+    public void copyFrom(CountComponent other) {
 
     }
 }

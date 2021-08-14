@@ -11,7 +11,7 @@ public class FloatingCountComponent implements Component<FloatingCountComponent>
     public int neighbors = 0;
 
     @Override
-    public void copy(FloatingCountComponent other) {
+    public void copyFrom(FloatingCountComponent other) {
         this.neighbors = other.neighbors;
     }
 }

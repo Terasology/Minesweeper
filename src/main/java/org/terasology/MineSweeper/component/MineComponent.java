@@ -9,7 +9,7 @@ import org.terasology.gestalt.entitysystem.component.Component;
  */
 public class MineComponent implements Component<MineComponent> {
     @Override
-    public void copy(MineComponent other) {
+    public void copyFrom(MineComponent other) {
 
     }
 }
