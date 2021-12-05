@@ -16,7 +16,6 @@ import org.terasology.MineSweeper.component.FloatingCountComponent;
 import org.terasology.MineSweeper.component.MineComponent;
 import org.terasology.engine.entitySystem.entity.EntityManager;
 import org.terasology.engine.entitySystem.entity.EntityRef;
-import org.terasology.engine.entitySystem.event.ReceiveEvent;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
 import org.terasology.engine.entitySystem.systems.RegisterSystem;
@@ -38,6 +37,7 @@ import org.terasology.engine.world.block.entity.CreateBlockDropsEvent;
 import org.terasology.engine.world.block.family.BlockFamily;
 import org.terasology.engine.world.block.family.BlockPlacementData;
 import org.terasology.explosives.logic.ExplosionActionComponent;
+import org.terasology.gestalt.entitysystem.event.ReceiveEvent;
 
 import java.util.Map;
 import java.util.Queue;
